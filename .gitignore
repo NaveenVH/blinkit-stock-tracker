@@ -1,0 +1,17 @@
+# Private Credentials
+serviceAccountKey.json
+.env
+
+# Playwright Debug files
+*.png
+
+# Python environment & cache
+__pycache__/
+*.pyc
+.pytest_cache/
+venv/
+.env/
+
+# IDE files
+.vscode/
+.idea/

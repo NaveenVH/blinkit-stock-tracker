@@ -1,0 +1,1540 @@
+{
+  "data": {
+    "ua": {
+      "isAmp": false,
+      "isPwa": false,
+      "isGrofersWebView": false,
+      "isPhonePeWebView": false,
+      "isAirtelWebView": false,
+      "isInappIntegration": false,
+      "platform": "desktop_web",
+      "uaString": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      "parsedUA": {
+        "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "browser": {
+          "name": "Chrome",
+          "version": "120.0.0.0",
+          "major": "120"
+        },
+        "engine": {
+          "name": "Blink",
+          "version": "120.0.0.0"
+        },
+        "os": {
+          "name": "Windows",
+          "version": "10"
+        },
+        "device": {},
+        "cpu": {
+          "architecture": "amd64"
+        }
+      },
+      "isWindows": true,
+      "isMobile": false,
+      "isFirefox": false,
+      "isAndroid": false,
+      "isSafari": false,
+      "isIOS": false,
+      "isWebView": false,
+      "appVersion": 1008010016
+    },
+    "featureFlags": {
+      "is-web-enhanced-page-load-enabled": false,
+      "is-ssr-prerender-enable-for-bots": false,
+      "is-web-full-screen-location-select-enabled": false,
+      "is-type-to-search-mweb-enabled": true,
+      "is-web-onesupport-enabled": true,
+      "is-web-zpay-enabled": true,
+      "is-web-print-enabled": true,
+      "is_consumer_web_bff_enabled": true,
+      "is-web-jumbo-client-enabled": true,
+      "is-web-plp-bff-enabled": true,
+      "is-web-cart-coupon-enabled": false,
+      "is-web-search-bff-enabled": true,
+      "is-web-zpay-v2-enabled": false,
+      "is-web-bff-order-history-enabled": true,
+      "is-web-bff-crystal-track-order-enabled": true,
+      "is-web-pdp-bff-enabled": true,
+      "show-bill-and-tip-v2-on-web": true,
+      "is-web-dp-tip-enabled": true,
+      "is-web-location-v2-enabled": false,
+      "is-web-new-cart-address": true,
+      "dc-web-enabled": true,
+      "is-web-gyftr-enabled": true,
+      "is-web-v1-order-count-enabled": true,
+      "is-web-desktop-bff-pdp-enabled": true,
+      "is-web-desktop-bff-slp-enabled": true,
+      "is-web-desktop-bff-plp-enabled": true,
+      "is-web-desktop-bff-dc-enabled": true,
+      "is-web-eta-v2-enabled": true,
+      "is-web-location-auto-suggest-enabled": true,
+      "is-web-blinkit-link-enabled": true,
+      "is-web-mobile-pdp-v2-enabled": true,
+      "is-web-paas-async-validation-enabled": true,
+      "is_web_crystal_track_v2_enabled": true,
+      "is-web-pharma-checkouts-enabled": true,
+      "is-web-paas-revamp-enabled": true,
+      "is-web-cart-share-enabled": true
+    },
+    "deviceId": null,
+    "chainId": 1383,
+    "auth": {
+      "accessToken": null,
+      "phoneNumber": null
+    },
+    "user": {
+      "properties": {},
+      "profile": {}
+    },
+    "location": {
+      "coords": {
+        "isDefault": true,
+        "lat": 28.413333,
+        "lon": 77.072833,
+        "locality": "Gurugram",
+        "id": 1849,
+        "isTopCity": true,
+        "cityName": "HR-NCR",
+        "landmark": null,
+        "addressId": null
+      }
+    },
+    "merchant": {
+      "id": 31719
+    },
+    "categories": {
+      "list": [],
+      "lastFetchedAt": null
+    },
+    "recipes": {
+      "recipes": [],
+      "nextPageToken": null,
+      "isLoading": false,
+      "error": null
+    },
+    "mainConfig": {},
+    "cart": {
+      "count": 0,
+      "total": 0,
+      "chargeableDeliveryCost": 0,
+      "items": {},
+      "promoInfo": [],
+      "paymentMode": null,
+      "step": [],
+      "version": 1,
+      "promo_id": "",
+      "CartAddressScreenVisible": false,
+      "uniqueSkuInCart": 0,
+      "cart_type": ""
+    },
+    "addresses": [],
+    "addressesV2": {
+      "addresses": {
+        "message": "",
+        "addresses_data": []
+      },
+      "error": null,
+      "status": "idle"
+    },
+    "search": {
+      "history": []
+    },
+    "seo": {},
+    "persistentKeys": {},
+    "secondaryData": {
+      "isLoading": false,
+      "additional_charges_config": null,
+      "analytics_properties": {
+        "merchant_id": 31719,
+        "merchant_name": null,
+        "city_id": 1849,
+        "city_name": "HR-NCR",
+        "chain_id": 1383,
+        "min_order": null,
+        "delivery_type": null,
+        "services": {
+          "merchants": [
+            {
+              "id": "31719",
+              "type": "express"
+            },
+            {
+              "id": "31719",
+              "type": "longtail"
+            },
+            {
+              "id": "31719",
+              "type": "unicorn"
+            },
+            {
+              "id": "46421",
+              "type": "super_longtail"
+            },
+            {
+              "id": "35940",
+              "type": "instant"
+            }
+          ],
+          "emergency": [
+            {
+              "type": "ambulance",
+              "id": "118"
+            },
+            {
+              "type": "ambulance",
+              "id": "6"
+            },
+            {
+              "type": "ambulance",
+              "id": "47"
+            },
+            {
+              "type": "ambulance",
+              "id": "10"
+            },
+            {
+              "type": "ambulance",
+              "id": "46"
+            },
+            {
+              "type": "ambulance",
+              "id": "11"
+            },
+            {
+              "type": "ambulance",
+              "id": "8"
+            },
+            {
+              "type": "ambulance",
+              "id": "54"
+            },
+            {
+              "type": "ambulance",
+              "id": "12"
+            },
+            {
+              "type": "ambulance",
+              "id": "9"
+            },
+            {
+              "type": "ambulance",
+              "id": "53"
+            },
+            {
+              "type": "ambulance",
+              "id": "96"
+            }
+          ]
+        },
+        "segment_type": null,
+        "user_type": null,
+        "lifetime_orders": null,
+        "monthly_orders": null,
+        "traits_middleware": null,
+        "user_experiment_buckets": [
+          "RANDOM#bucket1",
+          "INCREASING_ROLLOUT#bucket2",
+          "DECREASING_ROLLOUT#bucket1"
+        ],
+        "latitude": 28.413333,
+        "longitude": 77.072833,
+        "is_restricted_mode_enabled": false
+      },
+      "referral_benefits_data": null,
+      "splash_ads": [],
+      "prefetch_media": [
+        {
+          "media_type": "image",
+          "storage_type": "app",
+          "urls": [
+            "https://cdn.grofers.com/assets/ui/ofse_happy_happy_thankyou_v2.png?disable_resizing=true",
+            "https://cdn.grofers.com/layout-engine/v2/2024-03/1711617518471-nqr_bottomsheet_1.png?disable_resizing=true"
+          ]
+        },
+        {
+          "media_type": "video",
+          "storage_type": "app",
+          "urls": []
+        },
+        {
+          "media_type": "lottie",
+          "storage_type": "app",
+          "urls": []
+        },
+        {
+          "media_type": "web_resource",
+          "storage_type": "app",
+          "urls": []
+        }
+      ],
+      "show_product_recommendations": true,
+      "trending_searches_list": [],
+      "user_log_properties": {
+        "is_employee": false
+      },
+      "add_to_cart_animation_config": {
+        "enabled": false,
+        "max_counter": 3
+      },
+      "live_activity_ads": [],
+      "loading_overlay_config": [
+        {
+          "variants": [
+            {
+              "image": {
+                "animation": {
+                  "url": "https://cdn.grofers.com/layout-engine/v2/2025-03/circularLoader3.json",
+                  "repeat": true,
+                  "height": "100",
+                  "aspect_ratio": 1
+                }
+              },
+              "title": {
+                "text": "Everything you need, delivered at your doorstep"
+              }
+            }
+          ],
+          "selection_type": "shuffle",
+          "schedule": {
+            "offset_in_mins": 0,
+            "duration_in_mins": 2041920,
+            "recurrence_expr": "DTSTART;TZID=Asia/Kolkata:20260112T075928"
+          }
+        }
+      ],
+      "sbc_auto_renewal_data": {
+        "text": "Membership will auto renew at \u20b9%s after %s for card payments.",
+        "tooltip": {
+          "heading": "Auto - renewal details",
+          "items": [
+            {
+              "key": "Membership Plan (%s)",
+              "value": "\u20b9%s"
+            }
+          ]
+        }
+      },
+      "cart_sbc_details": null,
+      "sbc_free_delivery_details": {
+        "free_delivery_count": 0,
+        "minimum_order_value": 0,
+        "order_limit": 30
+      },
+      "template_version": 0,
+      "profile_image_banner": {
+        "url": "https://cdn.grofers.com/layout-engine/v2/2025-04/Birthday_Light-(1)/Birthday_Light-(1)_light.png",
+        "aspect_ratio": 6,
+        "click_action": {
+          "open_bottom_sheet": {
+            "data": null,
+            "height": {},
+            "page_identifier": "birthday_input_bottom_sheet"
+          },
+          "type": "open_bottom_sheet"
+        },
+        "accessibility_text": {
+          "text": "Birthday Image Banner"
+        }
+      },
+      "search_bar_ui_config_map": {
+        "default_search": {
+          "version": "v1",
+          "data": {
+            "hint": {
+              "text": "Search for atta, dal, coke and more"
+            },
+            "left_icon": {
+              "code": "e804",
+              "click_action": {
+                "dismiss_page": {},
+                "type": "dismiss_page"
+              },
+              "secondary_click_actions": [
+                {
+                  "trigger_observers": {
+                    "trigger": "AMTC"
+                  },
+                  "type": "trigger_observers"
+                }
+              ],
+              "accessibility_text": {
+                "text": "Navigate up"
+              }
+            },
+            "mic_data": {
+              "is_visible": true,
+              "icon_color": {
+                "type": "black",
+                "tint": "900"
+              }
+            },
+            "margin": "4,12,4,12",
+            "bg_color": {
+              "type": "accent",
+              "tint": "900"
+            }
+          }
+        },
+        "order_history_search": {
+          "version": "v1",
+          "data": {
+            "hint": {
+              "text": "Start typing..."
+            },
+            "left_icon": {
+              "code": "e804",
+              "click_action": {
+                "dismiss_page": {},
+                "type": "dismiss_page"
+              },
+              "accessibility_text": {
+                "text": "Navigate up"
+              }
+            },
+            "mic_data": {
+              "is_visible": false
+            },
+            "margin": "4,12,4,12",
+            "bg_color": {
+              "type": "white",
+              "tint": "900"
+            }
+          }
+        }
+      }
+    },
+    "analyticsAttributes": {
+      "customFrontendAttributes": {
+        "cart_id": null,
+        "rn_bundle_version": null
+      },
+      "customBackendAttributes": {
+        "merchant_id": 31719,
+        "merchant_name": null,
+        "city_id": 1849,
+        "city_name": "HR-NCR",
+        "chain_id": 1383,
+        "min_order": null,
+        "delivery_type": null,
+        "services": {
+          "merchants": [
+            {
+              "id": "31719",
+              "type": "express"
+            },
+            {
+              "id": "31719",
+              "type": "longtail"
+            },
+            {
+              "id": "31719",
+              "type": "unicorn"
+            },
+            {
+              "id": "46421",
+              "type": "super_longtail"
+            },
+            {
+              "id": "35940",
+              "type": "instant"
+            }
+          ],
+          "emergency": [
+            {
+              "type": "ambulance",
+              "id": "118"
+            },
+            {
+              "type": "ambulance",
+              "id": "6"
+            },
+            {
+              "type": "ambulance",
+              "id": "47"
+            },
+            {
+              "type": "ambulance",
+              "id": "10"
+            },
+            {
+              "type": "ambulance",
+              "id": "46"
+            },
+            {
+              "type": "ambulance",
+              "id": "11"
+            },
+            {
+              "type": "ambulance",
+              "id": "8"
+            },
+            {
+              "type": "ambulance",
+              "id": "54"
+            },
+            {
+              "type": "ambulance",
+              "id": "12"
+            },
+            {
+              "type": "ambulance",
+              "id": "9"
+            },
+            {
+              "type": "ambulance",
+              "id": "53"
+            },
+            {
+              "type": "ambulance",
+              "id": "96"
+            }
+          ]
+        },
+        "segment_type": null,
+        "user_type": null,
+        "lifetime_orders": null,
+        "monthly_orders": null,
+        "traits_middleware": null,
+        "user_experiment_buckets": [
+          "RANDOM#bucket1",
+          "INCREASING_ROLLOUT#bucket2",
+          "DECREASING_ROLLOUT#bucket1"
+        ],
+        "latitude": 28.413333,
+        "longitude": 77.072833,
+        "is_restricted_mode_enabled": false
+      },
+      "userAttributes": {
+        "email": "",
+        "phone": "",
+        "id": null
+      },
+      "sessionAttributes": {
+        "id": "",
+        "isSynced": false
+      },
+      "acquisitionAttributes": {
+        "install_source": "#-NA",
+        "install_campaign": "#-NA",
+        "install_medium": "#-NA"
+      },
+      "deviceAttributes": {
+        "id": ""
+      },
+      "lastPageAttributes": {},
+      "clickSourceDataAttributes": {}
+    },
+    "eta": {
+      "data": {},
+      "eta_in_minutes": null,
+      "eta_info_v2": null
+    },
+    "print": {
+      "data": [],
+      "passwordConfig": [],
+      "settings": {
+        "color": "BLACK_AND_WHITE",
+        "side": "SINGLE",
+        "orientation": "PORTRAIT",
+        "number_of_copies": 1
+      },
+      "status": null,
+      "productConfig": {},
+      "filesUploadedCount": 0,
+      "isLoading": true,
+      "response": null,
+      "isApiError": false,
+      "fileConstraints": {},
+      "initialFileConstraints": {},
+      "isPasswordLoading": true,
+      "passData": {},
+      "removePassFiles": [],
+      "isUploadComplete": false,
+      "isSuccessModalOpened": false,
+      "currentPrintId": null,
+      "printType": null
+    },
+    "assistReducer": {},
+    "ambulanceMetrics": {
+      "data": null,
+      "loading": false,
+      "error": null
+    }
+  },
+  "ui": {
+    "feed": {
+      "isLoading": false,
+      "data": null,
+      "isBffLoading": false,
+      "bffData": null,
+      "homepageTrackingData": null,
+      "isHomePageVisited": false,
+      "initialRender": true
+    },
+    "login": {
+      "errorMsg": null,
+      "isOtpValid": false,
+      "isPhoneNumberValid": false,
+      "loginState": "phone",
+      "otp": null,
+      "phoneNumber": null,
+      "resendTimer": 0,
+      "isResendRequest": false
+    },
+    "header": {
+      "isDropDownOpen": false,
+      "isLoggedIn": false,
+      "isShoppingCartTooltipShown": false,
+      "shouldFetchBalance": true,
+      "isSearchBarVisible": true
+    },
+    "layout": {
+      "bodyClickCounter": 0,
+      "locationMigrated": false
+    },
+    "toast": {
+      "isVisible": false,
+      "message": "",
+      "timeout": 5000
+    },
+    "addToHomeScreen": {
+      "isVisible": false,
+      "info": {}
+    },
+    "subHeader": {
+      "moreCatFrom": 5,
+      "showMore": false,
+      "refresh": false
+    },
+    "plp": {
+      "categoryOne": {
+        "shownCategory": {},
+        "activeCategory": null
+      },
+      "sorting": {
+        "selectedOption": "default"
+      },
+      "leftSection": {
+        "objects": []
+      },
+      "pageMeta": {},
+      "products": [],
+      "pagination": {
+        "page": 1,
+        "next": 20,
+        "hasMorePage": true,
+        "initState": true,
+        "noResultFound": false
+      },
+      "filter": {
+        "categoryZero": {},
+        "categoryOne": {},
+        "search": {},
+        "errorMsgCollection": null
+      },
+      "isLoading": true,
+      "navTags": {
+        "showMore": true
+      },
+      "headerHeights": {
+        "header": 60,
+        "subHeader": 46,
+        "divide": 18,
+        "borderAdjust": 18
+      },
+      "collectionProducts": [],
+      "ageConsent": "idle",
+      "prevAgeConsent": "idle"
+    },
+    "pdp": {
+      "product": {
+        "details": {},
+        "isProductFetched": false,
+        "isShowingCompleteDetails": false,
+        "isFetchingDetails": false,
+        "errorMessage": null,
+        "showLocationTooltip": true
+      },
+      "bffPdp": {
+        "bffData": null,
+        "sizeChartData": null,
+        "openBoxDeliveryData": null,
+        "status": "idle",
+        "error": null
+      },
+      "brandContainerTrackingFlag": false,
+      "selectedVariant": {},
+      "selectedProduct": null,
+      "imageGallery": {
+        "mainImageIndex": 0,
+        "isShown": false,
+        "imageGallery": []
+      },
+      "hasAddedToCartFromQueryParam": false,
+      "rawData": null
+    },
+    "brand": {
+      "isLoading": true,
+      "products": [],
+      "leftSection": {
+        "objects": []
+      },
+      "pagination": null,
+      "isPaginationLoading": false
+    },
+    "checkout": {
+      "paymentStatus": false,
+      "checkoutState": "init",
+      "checkoutStatesVisited": [],
+      "checkoutAddresses": null,
+      "cartSynced": false,
+      "userCards": [],
+      "loginInProgress": false,
+      "isGettingAddresses": false,
+      "isCreatingPaymentTransaction": true,
+      "isGrofersCashApplicable": false,
+      "isApplyingGrofersCash": false,
+      "wallet": {
+        "oc": {
+          "meta": {}
+        },
+        "gc": {}
+      },
+      "allBanks": [],
+      "cardOffers": [],
+      "selectedWallet": {
+        "name": "Paytm",
+        "provider": 5,
+        "code": null
+      },
+      "bankOffer": {
+        "isCheckingValidity": false,
+        "validity": null,
+        "validOffer": null
+      },
+      "enabledPayments": [],
+      "selectedBank": null,
+      "amountAdded": 0,
+      "promoTerms": [],
+      "confirmedAddress": null,
+      "showLoader": false
+    },
+    "cart": {
+      "modal": {
+        "isOpen": false
+      },
+      "page": {
+        "isOpen": false
+      },
+      "promoCode": {
+        "isApplyingPromo": false
+      },
+      "migration": {
+        "isMigrating": false
+      },
+      "pricingDetailsMap": {},
+      "cartScreen": {
+        "status": 0,
+        "showDialog": false,
+        "defaultPayment": null,
+        "isPaymentModalOpen": false,
+        "paymentStatus": false,
+        "isPaymentSelectionModal": false,
+        "payment_error": false,
+        "isPaymentStarted": false,
+        "isPaymentFailed": false,
+        "isPharmaItem": false
+      },
+      "couponsListing": null,
+      "cartAddressScreen": {
+        "cartAddressScreenVisible": false
+      }
+    },
+    "location": {
+      "errorMsgAddresses": null,
+      "errorMsgLocation": null,
+      "hasFetchedAddresses": false,
+      "isDetectingLocation": false,
+      "isFetchingAddresses": null,
+      "previousStep": null,
+      "step": "DEFAULT",
+      "shouldShake": false,
+      "isLocationDropdownOpen": false,
+      "showLocationTooltip": false,
+      "hasFetchedLocation": null,
+      "searchInputFocus": false,
+      "fetchingLocationStatus": false,
+      "newUserLocationStep": "",
+      "newLocationAutoSuggestToken": ""
+    },
+    "search": {
+      "keyword": "milk",
+      "isSearching": true,
+      "isFetchingMore": true,
+      "hasMoreResults": true,
+      "isResultsNotFound": false,
+      "results": [],
+      "trending": [],
+      "searchHistory": [],
+      "suggestions": [],
+      "typeaheadShown": false,
+      "paginationURL": "",
+      "suggestedKeyword": "",
+      "searchProductBffData": [],
+      "showAutoSuggestions": true,
+      "isBffResultsNotFound": false,
+      "emptySearchData": {},
+      "typingState": false,
+      "postbackParams": {
+        "applied_filters": null,
+        "monet_assets": [
+          {
+            "name": "ads_vertical_banner",
+            "processed": 0,
+            "total": 0
+          }
+        ],
+        "postback_meta": {
+          "processedGroupIds": [
+            1946467,
+            2056959,
+            2056955,
+            2056984,
+            2908418,
+            2057146,
+            549012,
+            143225,
+            1097667,
+            1324674,
+            1910213,
+            2056961
+          ],
+          "pageMeta": {
+            "scrollMeta": [
+              {
+                "entitiesCount": 38
+              }
+            ]
+          }
+        },
+        "previous_search_query": "milk",
+        "processed_rails": {},
+        "similar_entities": null,
+        "sort": "",
+        "vertical_cards_processed": 12
+      },
+      "searchType": "type_to_search",
+      "searchResultText": {},
+      "triggerCountMap": {},
+      "productSuggestionBffData": {},
+      "newAutoSuggestionData": {
+        "actions": [
+          {
+            "type": "upsert_snippets",
+            "upsert_snippets": {
+              "snippet_position_to_attach": 0,
+              "snippets_to_add": [
+                {
+                  "data": {
+                    "items": [
+                      {
+                        "data": {
+                          "title": {
+                            "text": "<medium-400|{grey-700|Milk}>",
+                            "color": {
+                              "type": "black",
+                              "tint": "900"
+                            },
+                            "font": {
+                              "size": "400",
+                              "weight": "semibold"
+                            },
+                            "is_markdown": 1,
+                            "number_of_lines": 1
+                          },
+                          "click_action": {
+                            "type": "update_search_query",
+                            "update_search_query": {
+                              "query": "milk",
+                              "search_type": "auto_suggest",
+                              "should_validate": false,
+                              "body_params": {
+                                "doc_id": "KEYTERM-milk-1497",
+                                "entity_image_url": "https://cdn.grofers.com/da/cms-assets/cms/product/5734b087-3ad9-485f-bbe2-52079cd9e35d.png",
+                                "entity_name": "milk",
+                                "entity_type": "keyterm",
+                                "id": 1497
+                              }
+                            }
+                          },
+                          "secondary_click_actions": [
+                            {
+                              "keyboard_action": {
+                                "state": "CLOSE"
+                              },
+                              "type": "keyboard_action"
+                            },
+                            {
+                              "type": "scroll_to_top"
+                            }
+                          ],
+                          "image": {
+                            "url": "https://cdn.grofers.com/da/cms-assets/cms/product/5734b087-3ad9-485f-bbe2-52079cd9e35d.png?dpr_multiplier=3.00",
+                            "bg_color": {
+                              "type": "white",
+                              "tint": "900"
+                            },
+                            "width": 32,
+                            "height": 32,
+                            "border": {
+                              "width": 1,
+                              "colors": [
+                                {
+                                  "type": "grey",
+                                  "tint": "200"
+                                }
+                              ]
+                            },
+                            "corner_radius": 8
+                          },
+                          "corner_radius": 8
+                        },
+                        "tracking": {
+                          "widget_meta": {
+                            "widget_name": "Suggested Keywords Widget",
+                            "widget_title": "Auto Suggestion"
+                          },
+                          "impression_map": {
+                            "event_name": "Search Suggestion Shown"
+                          },
+                          "click_map": {
+                            "event_name": "Search Suggestion Clicked",
+                            "search_keyword": "milk"
+                          },
+                          "common_attributes": {
+                            "child_widget_id": "1497",
+                            "images_shown": true,
+                            "reason": "identity_exact,ranked_entity_keyterm_1497:feedback|sub_search,misspelled_name_prefix,candidate_0_name_prefix,stemmed_name_prefix,candidate_0_name_exact",
+                            "search_actual_keyword": "milk",
+                            "search_input_keyword": "milk",
+                            "search_keyword_parent": "type_to_search",
+                            "search_keyword_type": "type_to_search",
+                            "search_previous_keyword": "",
+                            "state": "",
+                            "subtitle": "",
+                            "suggestion_source": "autocomplete",
+                            "suggestion_type": "keyterm",
+                            "suggestion_value": "milk",
+                            "widget_position": 1
+                          }
+                        },
+                        "widget_type": "autosuggestion_snippet"
+                      },
+                      {
+                        "data": {
+                          "title": {
+                            "text": "<semibold-400|{black-900|Full cream }><medium-400|{grey-700|milk}>",
+                            "color": {
+                              "type": "black",
+                              "tint": "900"
+                            },
+                            "font": {
+                              "size": "400",
+                              "weight": "semibold"
+                            },
+                            "is_markdown": 1,
+                            "number_of_lines": 1
+                          },
+                          "click_action": {
+                            "type": "update_search_query",
+                            "update_search_query": {
+                              "query": "full cream milk",
+                              "search_type": "auto_suggest",
+                              "should_validate": false,
+                              "body_params": {
+                                "doc_id": "COMPOSITE_KEYWORD-full_cream_milk-2621",
+                                "entity_image_url": "https://cdn.grofers.com/da/cms-assets/cms/product/628c97e0-5ed4-425d-a667-1d3bfa6f0bde.png",
+                                "entity_name": "full cream milk",
+                                "entity_type": "composite_keyword",
+                                "id": 2621
+                              }
+                            }
+                          },
+                          "secondary_click_actions": [
+                            {
+                              "keyboard_action": {
+                                "state": "CLOSE"
+                              },
+                              "type": "keyboard_action"
+                            },
+                            {
+                              "type": "scroll_to_top"
+                            }
+                          ],
+                          "image": {
+                            "url": "https://cdn.grofers.com/da/cms-assets/cms/product/628c97e0-5ed4-425d-a667-1d3bfa6f0bde.png?dpr_multiplier=3.00",
+                            "bg_color": {
+                              "type": "white",
+                              "tint": "900"
+                            },
+                            "width": 32,
+                            "height": 32,
+                            "border": {
+                              "width": 1,
+                              "colors": [
+                                {
+                                  "type": "grey",
+                                  "tint": "200"
+                                }
+                              ]
+                            },
+                            "corner_radius": 8
+                          },
+                          "corner_radius": 8
+                        },
+                        "tracking": {
+                          "widget_meta": {
+                            "widget_name": "Suggested Keywords Widget",
+                            "widget_title": "Auto Suggestion"
+                          },
+                          "impression_map": {
+                            "event_name": "Search Suggestion Shown"
+                          },
+                          "click_map": {
+                            "event_name": "Search Suggestion Clicked",
+                            "search_keyword": "full cream milk"
+                          },
+                          "common_attributes": {
+                            "child_widget_id": "2621",
+                            "images_shown": true,
+                            "reason": "ranked_entity_composite_keyword_2621:feedback|sub_search,identity_exact,misspelled_name_prefix,candidate_0_name_prefix,stemmed_name_prefix",
+                            "search_actual_keyword": "milk",
+                            "search_input_keyword": "milk",
+                            "search_keyword_parent": "type_to_search",
+                            "search_keyword_type": "type_to_search",
+                            "search_previous_keyword": "",
+                            "state": "",
+                            "subtitle": "",
+                            "suggestion_source": "autocomplete",
+                            "suggestion_type": "composite_keyword",
+                            "suggestion_value": "full cream milk",
+                            "widget_position": 2
+                          }
+                        },
+                        "widget_type": "autosuggestion_snippet"
+                      },
+                      {
+                        "data": {
+                          "title": {
+                            "text": "<semibold-400|{black-900|Amul }><medium-400|{grey-700|milk}>",
+                            "color": {
+                              "type": "black",
+                              "tint": "900"
+                            },
+                            "font": {
+                              "size": "400",
+                              "weight": "semibold"
+                            },
+                            "is_markdown": 1,
+                            "number_of_lines": 1
+                          },
+                          "click_action": {
+                            "type": "update_search_query",
+                            "update_search_query": {
+                              "query": "amul milk",
+                              "search_type": "auto_suggest",
+                              "should_validate": false,
+                              "body_params": {
+                                "doc_id": "COMPOSITE_KEYWORD-amul_milk-2289",
+                                "entity_image_url": "https://cdn.grofers.com/da/cms-assets/cms/product/628c97e0-5ed4-425d-a667-1d3bfa6f0bde.png",
+                                "entity_name": "amul milk",
+                                "entity_type": "composite_keyword",
+                                "id": 2289
+                              }
+                            }
+                          },
+                          "secondary_click_actions": [
+                            {
+                              "keyboard_action": {
+                                "state": "CLOSE"
+                              },
+                              "type": "keyboard_action"
+                            },
+                            {
+                              "type": "scroll_to_top"
+                            }
+                          ],
+                          "image": {
+                            "url": "https://cdn.grofers.com/da/cms-assets/cms/product/628c97e0-5ed4-425d-a667-1d3bfa6f0bde.png?dpr_multiplier=3.00",
+                            "bg_color": {
+                              "type": "white",
+                              "tint": "900"
+                            },
+                            "width": 32,
+                            "height": 32,
+                            "border": {
+                              "width": 1,
+                              "colors": [
+                                {
+                                  "type": "grey",
+                                  "tint": "200"
+                                }
+                              ]
+                            },
+                            "corner_radius": 8
+                          },
+                          "corner_radius": 8
+                        },
+                        "tracking": {
+                          "widget_meta": {
+                            "widget_name": "Suggested Keywords Widget",
+                            "widget_title": "Auto Suggestion"
+                          },
+                          "impression_map": {
+                            "event_name": "Search Suggestion Shown"
+                          },
+                          "click_map": {
+                            "event_name": "Search Suggestion Clicked",
+                            "search_keyword": "amul milk"
+                          },
+                          "common_attributes": {
+                            "child_widget_id": "2289",
+                            "images_shown": true,
+                            "reason": "identity_exact,misspelled_name_prefix,candidate_0_name_prefix,stemmed_name_prefix,ranked_entity_composite_keyword_2289:feedback|sub_search",
+                            "search_actual_keyword": "milk",
+                            "search_input_keyword": "milk",
+                            "search_keyword_parent": "type_to_search",
+                            "search_keyword_type": "type_to_search",
+                            "search_previous_keyword": "",
+                            "state": "",
+                            "subtitle": "",
+                            "suggestion_source": "autocomplete",
+                            "suggestion_type": "composite_keyword",
+                            "suggestion_value": "amul milk",
+                            "widget_position": 3
+                          }
+                        },
+                        "widget_type": "autosuggestion_snippet"
+                      },
+                      {
+                        "data": {
+                          "title": {
+                            "text": "<semibold-400|{black-900|Cow }><medium-400|{grey-700|milk}>",
+                            "color": {
+                              "type": "black",
+                              "tint": "900"
+                            },
+                            "font": {
+                              "size": "400",
+                              "weight": "semibold"
+                            },
+                            "is_markdown": 1,
+                            "number_of_lines": 1
+                          },
+                          "click_action": {
+                            "type": "update_search_query",
+                            "update_search_query": {
+                              "query": "cow milk",
+                              "search_type": "auto_suggest",
+                              "should_validate": false,
+                              "body_params": {
+                                "doc_id": "COMPOSITE_KEYWORD-cow_milk-4226",
+                                "entity_image_url": "https://cdn.grofers.com/da/cms-assets/cms/product/rc-upload-1770981407245-4.png",
+                                "entity_name": "cow milk",
+                                "entity_type": "composite_keyword",
+                                "id": 4226
+                              }
+                            }
+                          },
+                          "secondary_click_actions": [
+                            {
+                              "keyboard_action": {
+                                "state": "CLOSE"
+                              },
+                              "type": "keyboard_action"
+                            },
+                            {
+                              "type": "scroll_to_top"
+                            }
+                          ],
+                          "image": {
+                            "url": "https://cdn.grofers.com/da/cms-assets/cms/product/rc-upload-1770981407245-4.png?dpr_multiplier=3.00",
+                            "bg_color": {
+                              "type": "white",
+                              "tint": "900"
+                            },
+                            "width": 32,
+                            "height": 32,
+                            "border": {
+                              "width": 1,
+                              "colors": [
+                                {
+                                  "type": "grey",
+                                  "tint": "200"
+                                }
+                              ]
+                            },
+                            "corner_radius": 8
+                          },
+                          "corner_radius": 8
+                        },
+                        "tracking": {
+                          "widget_meta": {
+                            "widget_name": "Suggested Keywords Widget",
+                            "widget_title": "Auto Suggestion"
+                          },
+                          "impression_map": {
+                            "event_name": "Search Suggestion Shown"
+                          },
+                          "click_map": {
+                            "event_name": "Search Suggestion Clicked",
+                            "search_keyword": "cow milk"
+                          },
+                          "common_attributes": {
+                            "child_widget_id": "4226",
+                            "images_shown": true,
+                            "reason": "ranked_entity_composite_keyword_4226:feedback|sub_search,identity_exact,misspelled_name_prefix,candidate_0_name_prefix,stemmed_name_prefix",
+                            "search_actual_keyword": "milk",
+                            "search_input_keyword": "milk",
+                            "search_keyword_parent": "type_to_search",
+                            "search_keyword_type": "type_to_search",
+                            "search_previous_keyword": "",
+                            "state": "",
+                            "subtitle": "",
+                            "suggestion_source": "autocomplete",
+                            "suggestion_type": "composite_keyword",
+                            "suggestion_value": "cow milk",
+                            "widget_position": 4
+                          }
+                        },
+                        "widget_type": "autosuggestion_snippet"
+                      },
+                      {
+                        "data": {
+                          "title": {
+                            "text": "<semibold-400|{black-900|Toned }><medium-400|{grey-700|milk}>",
+                            "color": {
+                              "type": "black",
+                              "tint": "900"
+                            },
+                            "font": {
+                              "size": "400",
+                              "weight": "semibold"
+                            },
+                            "is_markdown": 1,
+                            "number_of_lines": 1
+                          },
+                          "click_action": {
+                            "type": "update_search_query",
+                            "update_search_query": {
+                              "query": "toned milk",
+                              "search_type": "auto_suggest",
+                              "should_validate": false,
+                              "body_params": {
+                                "doc_id": "COMPOSITE_KEYWORD-toned_milk-2582",
+                                "entity_image_url": "https://cdn.grofers.com/da/cms-assets/cms/product/5734b087-3ad9-485f-bbe2-52079cd9e35d.png",
+                                "entity_name": "toned milk",
+                                "entity_type": "composite_keyword",
+                                "id": 2582
+                              }
+                            }
+                          },
+                          "secondary_click_actions": [
+                            {
+                              "keyboard_action": {
+                                "state": "CLOSE"
+                              },
+                              "type": "keyboard_action"
+                            },
+                            {
+                              "type": "scroll_to_top"
+                            }
+                          ],
+                          "image": {
+                            "url": "https://cdn.grofers.com/da/cms-assets/cms/product/5734b087-3ad9-485f-bbe2-52079cd9e35d.png?dpr_multiplier=3.00",
+                            "bg_color": {
+                              "type": "white",
+                              "tint": "900"
+                            },
+                            "width": 32,
+                            "height": 32,
+                            "border": {
+                              "width": 1,
+                              "colors": [
+                                {
+                                  "type": "grey",
+                                  "tint": "200"
+                                }
+                              ]
+                            },
+                            "corner_radius": 8
+                          },
+                          "corner_radius": 8
+                        },
+                        "tracking": {
+                          "widget_meta": {
+                            "widget_name": "Suggested Keywords Widget",
+                            "widget_title": "Auto Suggestion"
+                          },
+                          "impression_map": {
+                            "event_name": "Search Suggestion Shown"
+                          },
+                          "click_map": {
+                            "event_name": "Search Suggestion Clicked",
+                            "search_keyword": "toned milk"
+                          },
+                          "common_attributes": {
+                            "child_widget_id": "2582",
+                            "images_shown": true,
+                            "reason": "identity_exact,misspelled_name_prefix,candidate_0_name_prefix,stemmed_name_prefix,ranked_entity_composite_keyword_2582:feedback|sub_search",
+                            "search_actual_keyword": "milk",
+                            "search_input_keyword": "milk",
+                            "search_keyword_parent": "type_to_search",
+                            "search_keyword_type": "type_to_search",
+                            "search_previous_keyword": "",
+                            "state": "",
+                            "subtitle": "",
+                            "suggestion_source": "autocomplete",
+                            "suggestion_type": "composite_keyword",
+                            "suggestion_value": "toned milk",
+                            "widget_position": 5
+                          }
+                        },
+                        "widget_type": "autosuggestion_snippet"
+                      }
+                    ],
+                    "bg_color_hex": "#FFFFFF",
+                    "bg_color": {
+                      "type": "accent",
+                      "tint": "900"
+                    },
+                    "identity": {
+                      "id": "autosuggest_snippet_1"
+                    },
+                    "container_layout_config": {
+                      "padding": "8,0,8,8",
+                      "item_spacing": 8
+                    }
+                  },
+                  "widget_type": "grid_container_vr"
+                }
+              ],
+              "conflict_policy": {
+                "match_config": {
+                  "strategy": "REPLACE"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "backdrop": {
+      "showBackdrop": false
+    },
+    "serviceability": {
+      "cityArea": null,
+      "locality": null
+    },
+    "modalInTransit": {
+      "location": false,
+      "login": false
+    },
+    "userCarts": {
+      "options": {
+        "shownOrderDetail": null,
+        "isLoading": false,
+        "noOrderHistory": false,
+        "noMoreOrders": false,
+        "page": {
+          "start": 0,
+          "next": 10
+        },
+        "selectedCart": null
+      },
+      "carts": [],
+      "reward": {
+        "hasReward": false,
+        "isLoading": false,
+        "data": {}
+      },
+      "orderSettlements": {
+        "settlements": [],
+        "isLoading": false
+      }
+    },
+    "grofersWallet": {
+      "isWalletActive": false,
+      "isFetchingWalletDetails": false,
+      "isFetchingWalletTxn": true,
+      "balance": 0,
+      "transactions": [],
+      "balanceDistribution": {},
+      "page": {
+        "next": 10,
+        "start": 0
+      }
+    },
+    "profile": {
+      "objects": [],
+      "layoutConfig": {}
+    },
+    "privacy": {
+      "accountPrivacySnippets": []
+    },
+    "address": {
+      "newAddress": {
+        "label": "Home",
+        "labelOption": "Home",
+        "isOther": false,
+        "validations": {}
+      },
+      "isDetectingLocality": false,
+      "isMapVisible": false,
+      "bff_address_id": null
+    },
+    "locationPicker": {
+      "isLocationFar": false,
+      "isSavingAddress": false,
+      "isNonServiceable": false,
+      "distanceConfirmationShown": false,
+      "markerLocality": "",
+      "marker": {
+        "lat": 28.416798,
+        "lng": 77.062757
+      },
+      "center": {
+        "lat": 28.416798,
+        "lng": 77.062757
+      },
+      "locationPickerPromptShown": false,
+      "isDetectingLocation": false,
+      "promptedAddress": {}
+    },
+    "locationPickerV2": {
+      "location_data": null,
+      "error": null,
+      "status": "idle"
+    },
+    "wallet": {
+      "isAddingMoney": false,
+      "isAddMoneyModalOpen": false,
+      "isLinkWalletModalOpen": false,
+      "errorMsg": null,
+      "isRequestingOtp": false,
+      "hasReceivedOtp": false,
+      "isPhoneNumberValid": false,
+      "isOtpValid": false,
+      "isVerifyingOtp": false,
+      "isReRequestingOtp": false,
+      "resendTimer": 0,
+      "phoneNumber": null
+    },
+    "orderHistory": {
+      "start": 0,
+      "next": 12,
+      "hasMoreOrders": true,
+      "isBffOrderHistoryLoading": false,
+      "bffOrderHistoryData": null,
+      "initialRender": true
+    },
+    "orderDetails": {
+      "widgets": null,
+      "cartId": "",
+      "orderId": "",
+      "inAppSupportUrl": "https://in-app-support.grofer.io/support/",
+      "cancellationReasonList": [],
+      "merchantId": 0,
+      "isOneSupportActive": false,
+      "oneSupportOrderId": null,
+      "mainImageIndex": 0,
+      "isShown": false,
+      "imageGallery": [],
+      "bottomButton": {}
+    },
+    "giftCard": {
+      "giftCardTnC": null,
+      "giftCardTnCLoading": false,
+      "giftCardsLoading": false,
+      "giftCardsList": null,
+      "giftCardModalLoading": false,
+      "giftCardModalData": null
+    },
+    "prescriptions": {
+      "isBffPrescriptionLoading": false,
+      "bffPrescriptionData": null
+    },
+    "widgetizedLayout": {
+      "data": []
+    },
+    "plpContainer": {
+      "isPlpBffLoading": false,
+      "leftNav": {},
+      "feedData": {},
+      "isFeedApiError": false,
+      "isNavApiStatus": "idle",
+      "postbackParams": {},
+      "products": [],
+      "selectedSnippetIndex": null,
+      "firstRender": true,
+      "isSticky": false
+    },
+    "widgetizedFilters": {
+      "updateFilterFlag": false,
+      "filterModalData": null,
+      "filterModalError": null,
+      "filterModalStatus": "idle",
+      "filterSearchKeyword": "",
+      "updateUrl": "",
+      "filtersMap": {},
+      "firstModalRender": true,
+      "baseUrl": "",
+      "tvoArray": [],
+      "selectedSections": []
+    },
+    "tabLayout": {
+      "bffData": null,
+      "navData": null,
+      "isTabLayoutLoading": false,
+      "selectedTabLayoutStatus": "idle",
+      "selectedTabLayoutError": null,
+      "tabLayoutNavStatus": "idle",
+      "tabLayoutNavError": null
+    }
+  },
+  "modal": {
+    "modalType": null,
+    "modalProps": {},
+    "isOpen": false,
+    "showAnimation": false,
+    "isDelayed": false
+  },
+  "screen": {},
+  "browser": {
+    "_responsiveState": true,
+    "lessThan": {
+      "mobile": false,
+      "tablet": false,
+      "desktop": false
+    },
+    "greaterThan": {
+      "mobile": true,
+      "tablet": true,
+      "desktop": false
+    },
+    "is": {
+      "mobile": false,
+      "tablet": false,
+      "desktop": true
+    },
+    "mediaType": "desktop",
+    "orientation": null,
+    "breakpoints": {
+      "mobile": 1020,
+      "tablet": 1260,
+      "desktop": null
+    }
+  },
+  "api": {},
+  "analytics": {}
+}
