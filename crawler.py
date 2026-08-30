@@ -44,22 +44,31 @@ def crawl_stock(latitude, longitude, target_product_id):
             # 1. Navigate to Homepage and Force Location Resolution
             print("Navigating to homepage to set location...")
             page.goto("https://blinkit.com/", wait_until="domcontentloaded", timeout=30000)
-            time.sleep(3)
             
             try:
-                # Click "Detect my location"
+                # Wait for the main "Detect my location" button to render (up to 8s)
                 detect_btn = page.locator("button:has-text('Detect my location'), [class*='Location']:has-text('Detect')").first
-                if detect_btn.is_visible():
+                
+                try:
+                    # Wait for it to become visible
+                    detect_btn.wait_for(state="visible", timeout=8000)
+                    print("Clicking visible 'Detect my location' button...")
                     detect_btn.click()
-                else:
-                    # Click location header to open modal
+                except Exception:
+                    # If direct detect button is not visible, try opening the location sidebar
+                    print("Direct detect button not visible. Trying location header selector...")
                     location_header = page.locator("div:has-text('Delivering to'), div:has-text('Delivery in'), div:has-text('Select Location'), div:has-text('Gurugram')").first
+                    location_header.wait_for(state="visible", timeout=8000)
                     location_header.click()
                     time.sleep(2)
-                    page.locator("text=Detect my location").first.click()
+                    
+                    # Click "Detect my location" inside the modal/sidebar
+                    modal_detect_btn = page.locator("text=Detect my location").first
+                    modal_detect_btn.wait_for(state="visible", timeout=5000)
+                    modal_detect_btn.click()
                 
-                # Wait for location to update
-                time.sleep(5)
+                # Wait for location coordinates to apply
+                time.sleep(6)
                 
                 # Print resolved address info
                 body_text = page.locator("body").inner_text()
@@ -77,8 +86,6 @@ def crawl_stock(latitude, longitude, target_product_id):
             
             # Extract text and button info from product detail page
             pdp_data = page.evaluate(r"""() => {
-                // Target the exact title element on Blinkit PDP page:
-                // Find the div with class 'tw-font-extrabold' that is NOT "Product Details"
                 let titleEl = Array.from(document.querySelectorAll('div.tw-font-extrabold')).find(el => el.innerText !== 'Product Details');
                 if (!titleEl) {
                     titleEl = document.querySelector('[class*="BreadcrumbProductName"]') || 
@@ -87,8 +94,6 @@ def crawl_stock(latitude, longitude, target_product_id):
                                 
                 if (!titleEl) return null;
                 
-                // Traverse parent chain of the title element to find the buy section 
-                // containing ADD or Out of Stock text. This avoids capturing other carousel items.
                 let container = titleEl;
                 let hasAdd = false;
                 let hasOos = false;
