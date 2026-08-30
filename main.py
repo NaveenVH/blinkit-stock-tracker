@@ -1,6 +1,7 @@
 import firebase_setup
 import crawler
 import notifier
+import config
 import sys
 
 # Configure stdout to support UTF-8 characters (like the Rupee symbol ₹)
