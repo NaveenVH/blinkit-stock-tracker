@@ -9,7 +9,7 @@ class DiscordNotifier(BaseNotifier):
     def __init__(self, webhook_url):
         self.webhook_url = webhook_url
 
-    def send(self, product_name, price, status, details_link=None):
+    def send(self, product_name, price, status, details_link=None, location_name=None):
         if not self.webhook_url or "YOUR_WEBHOOK_HERE" in self.webhook_url:
             print("WARNING: Discord Webhook URL is not configured. Notification skipped.")
             return False
@@ -40,6 +40,9 @@ class DiscordNotifier(BaseNotifier):
                 "text": "Blinkit Hyperlocal Stock Tracker"
             }
         }
+
+        if location_name:
+            embed["fields"].append({"name": "Target Location", "value": location_name, "inline": False})
 
         if details_link:
             embed["url"] = details_link

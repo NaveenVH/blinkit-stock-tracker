@@ -24,6 +24,7 @@ def main():
         product_name = monitor.get("product_name", f"Product ID {product_id}")
         lat = monitor.get("latitude")
         lon = monitor.get("longitude")
+        location_name = monitor.get("pincode") or monitor.get("location_name") or f"Coordinates ({lat}, {lon})"
         webhook_url = monitor.get("discord_webhook")
         # Fall back to the environment variable (GitHub secret) if document has placeholder or is empty
         if not webhook_url or "YOUR_WEBHOOK" in webhook_url:
@@ -70,7 +71,8 @@ def main():
                     product_name=matched_title,
                     price=price,
                     status=current_status,
-                    details_link=link
+                    details_link=link,
+                    location_name=location_name
                 )
                 
                 # Update Firestore with new status
