@@ -11,7 +11,7 @@ sys.stdout.reconfigure(encoding='utf-8')
 def process_monitor(monitor):
     """
     Processes a single product-location monitor rule:
-    Crawls stock status, checks for state changes, updates Firestore, and alerts Discord.
+    Crawls stock status, updates Firestore, and always sends a Discord notification.
     """
     doc_id = monitor.get("id")
     product_id = monitor.get("product_id")
@@ -24,8 +24,6 @@ def process_monitor(monitor):
     # Fall back to environment variable (GitHub secret) if document has placeholder or is empty
     if not webhook_url or "YOUR_WEBHOOK" in webhook_url:
         webhook_url = config.DEFAULT_DISCORD_WEBHOOK
-        
-    last_status = monitor.get("last_stock_status", "unknown")
     
     if not product_id:
         print(f"[-] Skipping monitor doc {doc_id} because product_id is missing.")
@@ -33,7 +31,7 @@ def process_monitor(monitor):
 
     print(f"\n[+] Starting Monitor: Product ID {product_id} at ({lat}, {lon})")
     
-    # Execute PDP crawl (isolated thread-safe browser context)
+    # Execute PDP crawl
     crawl_result = crawler.crawl_stock(lat, lon, product_id)
     
     if crawl_result["success"]:
@@ -56,26 +54,19 @@ def process_monitor(monitor):
                 except Exception as ue:
                     print(f"Warning: Failed to auto-update name in Firestore: {ue}")
         
-        # Check if stock status changed
-        if current_status != last_status:
-            print(f"[!] Stock transition detected for {matched_title}: {last_status} -> {current_status}")
-            
-            # Send Discord Notification
-            discord_notifier = notifier.get_notifier(webhook_url)
-            discord_notifier.send(
-                product_name=matched_title,
-                price=price,
-                status=current_status,
-                details_link=link,
-                location_name=location_name
-            )
-            
-            # Update Firestore with new status
-            firebase_setup.update_monitor_status(doc_id, current_status)
-        else:
-            print(f"[-] No stock change for {matched_title}. Remains: {current_status}")
-            # Update last checked timestamp in Firestore
-            firebase_setup.update_monitor_status(doc_id, current_status)
+        # Always send the Discord alert on run
+        print(f"[!] Sending notification for {matched_title} ({current_status}) at {location_name}")
+        discord_notifier = notifier.get_notifier(webhook_url)
+        discord_notifier.send(
+            product_name=matched_title,
+            price=price,
+            status=current_status,
+            details_link=link,
+            location_name=location_name
+        )
+        
+        # Update last checked status/timestamp in Firestore
+        firebase_setup.update_monitor_status(doc_id, current_status)
             
     else:
         print(f"[Error] Crawl failed for Product ID {product_id}: {crawl_result['error']}")
@@ -94,12 +85,10 @@ def main():
         return
         
     # Concurrently execute all checks in parallel
-    # 3 workers is a safe balance for both local machines and limited free-tier CI CPUs
     max_workers = 3
     print(f"Executing checks in parallel using {max_workers} worker threads...\n")
     
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-        # Submit all monitors to the thread pool
         executor.map(process_monitor, monitors)
         
     print("\nBatch crawl execution completed.")
