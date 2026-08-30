@@ -34,5 +34,7 @@ jobs:
         FIREBASE_PROJECT_ID: blinkit-stock-bot-2026
         # Read the Firebase Service Account JSON string from GitHub Secrets
         FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        # Read the Discord Webhook URL from GitHub Secrets
+        DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
       run: python main.py
 

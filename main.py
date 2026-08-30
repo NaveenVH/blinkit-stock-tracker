@@ -25,6 +25,9 @@ def main():
         lat = monitor.get("latitude")
         lon = monitor.get("longitude")
         webhook_url = monitor.get("discord_webhook")
+        # Fall back to the environment variable (GitHub secret) if document has placeholder or is empty
+        if not webhook_url or "YOUR_WEBHOOK" in webhook_url:
+            webhook_url = config.DEFAULT_DISCORD_WEBHOOK
         last_status = monitor.get("last_stock_status", "unknown")
         
         # Exact product ID is required
