@@ -1,5 +1,5 @@
 #!/bin/bash
-# Setup Script for running Blinkit Stock Tracker every 15 minutes via Crontab on Azure Linux VM
+# Setup Script for running Blinkit Stock Tracker every 1 minute via Crontab on Azure Linux VM
 
 # Get current directory absolute path
 REPO_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
@@ -13,15 +13,15 @@ else
     PYTHON_BIN=$(which python3)
 fi
 
-# Create crontab command string
-CRON_JOB="*/15 * * * * cd $REPO_DIR && $PYTHON_BIN main.py >> $REPO_DIR/tracker.log 2>&1"
+# Create crontab command string (Every 1 Minute: * * * * *)
+CRON_JOB="* * * * * cd $REPO_DIR && $PYTHON_BIN main.py >> $REPO_DIR/tracker.log 2>&1"
 
 # Add to crontab without duplicate entries
 (crontab -l 2>/dev/null | grep -v "main.py"; echo "$CRON_JOB") | crontab -
 
 echo "[+] Successfully configured Crontab on Azure VM!"
 echo "--------------------------------------------------"
-echo "Schedule:  Every 15 minutes (*/15 * * * *)"
+echo "Schedule:  Every 1 minute (* * * * *)"
 echo "Directory: $REPO_DIR"
 echo "Python:    $PYTHON_BIN"
 echo "Logs:      $REPO_DIR/tracker.log"
