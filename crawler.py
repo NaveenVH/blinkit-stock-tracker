@@ -1,10 +1,10 @@
-import requests
+from curl_cffi import requests
 import re
 
 def crawl_stock(latitude, longitude, target_product_id):
     """
-    Directly fetches product info from Blinkit's server-rendered HTML payload
-    using pure HTTP GET requests. Bypasses Playwright/Chromium entirely.
+    Fetches product stock info using TLS-impersonated HTTP GET requests (Chrome 120 fingerprint).
+    Bypasses Cloudflare 403 blocks on cloud hosting providers.
     
     Returns:
         dict: {
@@ -27,7 +27,7 @@ def crawl_stock(latitude, longitude, target_product_id):
         "error": None
     }
     
-    print(f"Starting direct HTTP check for Product ID: {target_product_id} at ({latitude}, {longitude})")
+    print(f"Starting TLS-impersonated check for Product ID: {target_product_id} at ({latitude}, {longitude})")
     
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
@@ -38,7 +38,8 @@ def crawl_stock(latitude, longitude, target_product_id):
     }
     
     try:
-        response = requests.get(direct_url, headers=headers, timeout=12)
+        # impersonate="chrome120" mimics a real desktop browser TLS handshake
+        response = requests.get(direct_url, headers=headers, impersonate="chrome120", timeout=12)
         
         if response.status_code == 200:
             html = response.text
@@ -63,7 +64,7 @@ def crawl_stock(latitude, longitude, target_product_id):
             result["price"] = price
             result["status"] = status
             
-            print(f"[+] HTTP check succeeded: '{product_name}' | price='{price}' | status='{status}'")
+            print(f"[+] TLS check succeeded: '{product_name}' | price='{price}' | status='{status}'")
             
         else:
             result["error"] = f"HTTP request failed with status code {response.status_code}"
