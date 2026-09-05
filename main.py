@@ -11,7 +11,7 @@ def process_monitor(monitor):
     """
     Processes a single product-location monitor rule:
     Crawls stock status, updates product details (name & description) in Firestore 'products' table,
-    updates monitor stock status, and dispatches Discord notifications.
+    updates monitor stock status, and dispatches Discord notifications ONLY if the product is in stock.
     """
     doc_id = monitor.get("id")
     product_id = monitor.get("product_id")
@@ -50,16 +50,19 @@ def process_monitor(monitor):
             product_name=matched_title
         )
         
-        # Send Discord notification
-        print(f"[!] Sending notification for {matched_title} ({current_status}) at {location_name}")
-        discord_notifier = notifier.get_notifier(webhook_url)
-        discord_notifier.send(
-            product_name=matched_title,
-            price=price,
-            status=current_status,
-            details_link=link,
-            location_name=location_name
-        )
+        # Send Discord notification ONLY if product is in stock
+        if current_status == "in_stock":
+            print(f"[!] Product IN STOCK! Sending notification for {matched_title} at {location_name}")
+            discord_notifier = notifier.get_notifier(webhook_url)
+            discord_notifier.send(
+                product_name=matched_title,
+                price=price,
+                status=current_status,
+                details_link=link,
+                location_name=location_name
+            )
+        else:
+            print(f"[-] Status is '{current_status}'. Skipping Discord notification for {matched_title} at {location_name}.")
         
         # Update last checked status/timestamp in Firestore
         firebase_setup.update_monitor_status(doc_id, current_status)
