@@ -12,6 +12,7 @@ def crawl_stock(latitude, longitude, target_product_id):
         dict: {
             "success": bool,
             "matched_title": str or None,
+            "description": str or None,
             "price": str or None,
             "status": "in_stock" | "out_of_stock" | "unknown",
             "link": str or None,
@@ -23,6 +24,7 @@ def crawl_stock(latitude, longitude, target_product_id):
     result = {
         "success": False,
         "matched_title": None,
+        "description": None,
         "price": None,
         "status": "unknown",
         "link": direct_url,
@@ -60,14 +62,24 @@ def crawl_stock(latitude, longitude, target_product_id):
                 html = response.text
                 
                 # 1. Parse Product Name
-                name_match = re.search(r'"product_name":"([^"]+)"', html) or re.search(r'"display_name":"([^"]+)"', html)
+                name_match = re.search(r'"product_name":"([^"]+)"', html) or re.search(r'"display_name":"([^"]+)"', html) or re.search(r'<title>([^<]+)</title>', html)
                 product_name = name_match.group(1) if name_match else None
+                if product_name and "Blinkit" in product_name and "Buy" in product_name:
+                    product_name = product_name.split("Online at")[0].replace("Buy", "").strip()
+
+                # 2. Parse Description
+                desc_match = (
+                    re.search(r'"description":"([^"]+)"', html) or
+                    re.search(r'<meta\s+(?:name|property)=["\'](?:description|og:description)["\']\s+content=["\']([^"\']+)["\']', html, re.IGNORECASE) or
+                    re.search(r'<meta\s+content=["\']([^"\']+)["\']\s+(?:name|property)=["\'](?:description|og:description)["\']', html, re.IGNORECASE)
+                )
+                description = desc_match.group(1).replace("\\n", " ").replace('\\"', '"').strip() if desc_match else None
                 
-                # 2. Parse Price
+                # 3. Parse Price
                 price_match = re.search(r'"price":(\d+)', html)
                 price = f"₹{price_match.group(1)}" if price_match else None
                 
-                # 3. Parse Stock Status
+                # 4. Parse Stock Status
                 status_match = re.search(r'"product_state":"([^"]+)"', html) or re.search(r'"state":"([^"]+)"', html)
                 state_val = status_match.group(1) if status_match else "unknown"
                 
@@ -76,6 +88,7 @@ def crawl_stock(latitude, longitude, target_product_id):
                 
                 result["success"] = True
                 result["matched_title"] = product_name
+                result["description"] = description
                 result["price"] = price
                 result["status"] = status
                 

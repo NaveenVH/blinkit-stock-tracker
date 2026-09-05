@@ -10,7 +10,8 @@ sys.stdout.reconfigure(encoding='utf-8')
 def process_monitor(monitor):
     """
     Processes a single product-location monitor rule:
-    Crawls stock status, updates Firestore, and sends a Discord notification.
+    Crawls stock status, updates product details (name & description) in Firestore 'products' table,
+    updates monitor stock status, and dispatches Discord notifications.
     """
     doc_id = monitor.get("id")
     product_id = monitor.get("product_id")
@@ -36,22 +37,18 @@ def process_monitor(monitor):
     if crawl_result["success"]:
         current_status = crawl_result["status"]
         matched_title = crawl_result["matched_title"] or product_name
+        description = crawl_result["description"]
         price = crawl_result["price"]
         link = crawl_result["link"]
         
         print(f"[Result] Product ID {product_id}: '{matched_title}' | price='{price}' | status='{current_status}'")
         
-        # Auto-update product_name in Firestore if it was default/empty
-        if matched_title and (not monitor.get("product_name") or monitor.get("product_name") == f"Product ID {product_id}"):
-            client = firebase_setup.init_firebase()
-            if client and doc_id != "mock_env_monitor":
-                try:
-                    client.collection("monitors").document(doc_id).update({
-                        "product_name": matched_title
-                    })
-                    print(f"[*] Auto-updated product name in Firestore for doc {doc_id} to: {matched_title}")
-                except Exception as ue:
-                    print(f"Warning: Failed to auto-update name in Firestore: {ue}")
+        # Save / Auto-update product details (including description) in separate 'products' table in Firestore
+        firebase_setup.update_product_details(
+            product_id=product_id,
+            description=description,
+            product_name=matched_title
+        )
         
         # Send Discord notification
         print(f"[!] Sending notification for {matched_title} ({current_status}) at {location_name}")
@@ -71,7 +68,7 @@ def process_monitor(monitor):
         print(f"[Error] Crawl failed for Product ID {product_id}: {crawl_result['error']}")
 
 def main():
-    print("Fetching active monitors from database...")
+    print("Fetching active monitors (isActive == True) from database...")
     try:
         monitors = firebase_setup.get_active_monitors()
     except Exception as e:
@@ -83,7 +80,7 @@ def main():
         print("No active monitors to process. Exiting.")
         return
         
-    # Process sequentially on main thread to avoid Python 3.12 greenlet thread-lock deadlocks
+    # Process sequentially on main thread
     for monitor in monitors:
         process_monitor(monitor)
         
