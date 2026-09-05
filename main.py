@@ -3,7 +3,6 @@ import crawler
 import notifier
 import config
 import sys
-import concurrent.futures
 
 # Configure stdout to support UTF-8 characters (like the Rupee symbol ₹)
 sys.stdout.reconfigure(encoding='utf-8')
@@ -11,7 +10,7 @@ sys.stdout.reconfigure(encoding='utf-8')
 def process_monitor(monitor):
     """
     Processes a single product-location monitor rule:
-    Crawls stock status, updates Firestore, and always sends a Discord notification.
+    Crawls stock status, updates Firestore, and sends a Discord notification.
     """
     doc_id = monitor.get("id")
     product_id = monitor.get("product_id")
@@ -54,7 +53,7 @@ def process_monitor(monitor):
                 except Exception as ue:
                     print(f"Warning: Failed to auto-update name in Firestore: {ue}")
         
-        # Always send the Discord alert on run
+        # Send Discord notification
         print(f"[!] Sending notification for {matched_title} ({current_status}) at {location_name}")
         discord_notifier = notifier.get_notifier(webhook_url)
         discord_notifier.send(
@@ -84,12 +83,9 @@ def main():
         print("No active monitors to process. Exiting.")
         return
         
-    # Concurrently execute all checks in parallel
-    max_workers = 3
-    print(f"Executing checks in parallel using {max_workers} worker threads...\n")
-    
-    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-        executor.map(process_monitor, monitors)
+    # Process sequentially on main thread to avoid Python 3.12 greenlet thread-lock deadlocks
+    for monitor in monitors:
+        process_monitor(monitor)
         
     print("\nBatch crawl execution completed.")
 
