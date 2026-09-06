@@ -6,7 +6,7 @@ sys.stdout.reconfigure(encoding='utf-8')
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Parse a Blinkit product link or message string and auto-add it to Firebase across all locations."
+        description="Parse a Blinkit product link or message string and toggle/auto-add it to Firebase."
     )
     parser.add_argument(
         "text",
@@ -31,16 +31,19 @@ def main():
 
     if result:
         print("\n==================================================")
-        print(" ✅ SUCCESS: Product Added / Active in Firebase!")
+        print(" ✅ SUCCESS: Product Updated in Firebase!")
         print("==================================================")
         print(f"  Product ID:       {result['product_id']}")
         print(f"  Product Name:     {result['product_name']}")
-        print(f"  Active Locations: {result['locations_count']}")
-        print(f"  New Monitors:     {result['monitors_created']}")
-        print("\nOn the next scheduled run (main.py), stock will be crawled for this product across all locations!")
+        print(f"  isActive Status:  {result.get('isActive')}")
+        if result.get('toggled'):
+            print(f"  Action:           TOGGLED ({result.get('status_label')})")
+        else:
+            print(f"  Active Locations: {result.get('locations_count', 1)}")
+            print(f"  New Monitors:     {result.get('monitors_created', 0)}")
+        print("\nChanges saved to Firebase!")
     else:
-        print("Failed to add product. Please check the input format.")
+        print("Failed to process product link. Please check input format.")
 
 if __name__ == "__main__":
     main()
-

@@ -276,21 +276,45 @@ def parse_and_add_product(text_or_url):
 
     print(f"[+] Parsed Input -> Product ID: {product_id} | Name: '{product_name}'")
 
-    # 3. Save/Upsert in 'products' table
+    # 3. Check if Product exists in 'products' table for Toggle logic
     products_ref = client.collection("products")
+    monitors_ref = client.collection("monitors")
     prod_doc_ref = products_ref.document(product_id)
     prod_snap = prod_doc_ref.get()
     
-    is_new_product = not prod_snap.exists
-
     if prod_snap.exists:
         existing_data = prod_snap.to_dict()
-        updates = {"isActive": True}
+        current_active = existing_data.get("isActive", existing_data.get("active", True))
+        
+        # TOGGLE STATUS: If currently True -> set False (inactive); if currently False -> set True (active)
+        new_active = not current_active
+        
+        updates = {"isActive": new_active}
         if not product_name.startswith("Product ID") and (not existing_data.get("product_name") or existing_data.get("product_name").startswith("Product ID")):
             updates["product_name"] = product_name
         prod_doc_ref.update(updates)
-        print(f"[*] Updated existing product {product_id} to isActive=True in 'products' table.")
+        
+        # Toggle all corresponding monitors for this product
+        mon_docs = list(monitors_ref.where(filter=FieldFilter("product_id", "==", product_id)).stream())
+        for mdoc in mon_docs:
+            monitors_ref.document(mdoc.id).update({"isActive": new_active})
+
+        resolved_name = existing_data.get("product_name") or product_name
+        status_label = "PAUSED / INACTIVE 🔴" if not new_active else "ACTIVATED 🟢"
+        print(f"[*] TOGGLED product {product_id} ('{resolved_name}') to isActive={new_active} ({status_label}).")
+
+        # Send Discord Toggle Acknowledgement
+        send_discord_acknowledgement(product_id, resolved_name, len(mon_docs) or 1, is_toggle=True, isActive=new_active)
+
+        return {
+            "product_id": product_id,
+            "product_name": resolved_name,
+            "isActive": new_active,
+            "toggled": True,
+            "status_label": status_label
+        }
     else:
+        # NEW PRODUCT: Create entry in 'products' table with isActive=True
         prod_doc_ref.set({
             "product_id": product_id,
             "product_name": product_name,
@@ -316,7 +340,6 @@ def parse_and_add_product(text_or_url):
         active_locations = [default_loc_ref[1].get()]
 
     # 5. Create monitor entries for each active location
-    monitors_ref = client.collection("monitors")
     webhook = config.DEFAULT_DISCORD_WEBHOOK or "https://discord.com/api/webhooks/YOUR_WEBHOOK_URL_HERE"
     
     monitors_created = 0
@@ -342,38 +365,53 @@ def parse_and_add_product(text_or_url):
             monitors_created += 1
             print(f"  [+] Created new monitor rule for Product {product_id} at location '{pincode}'.")
 
-    # Send Discord Acknowledgement ONLY if newly added product or new monitor rule
-    if is_new_product or monitors_created > 0:
-        send_discord_acknowledgement(product_id, product_name, len(active_locations))
-    else:
-        print(f"[-] Product {product_id} is already registered in Firebase. Skipping Discord acknowledgement.")
+    # Send Discord Acknowledgement for NEW product
+    send_discord_acknowledgement(product_id, product_name, len(active_locations), is_toggle=False, isActive=True)
 
     return {
         "product_id": product_id,
         "product_name": product_name,
+        "isActive": True,
         "locations_count": len(active_locations),
         "monitors_created": monitors_created
     }
 
-def send_discord_acknowledgement(product_id, product_name, locations_count):
+def send_discord_acknowledgement(product_id, product_name, locations_count, is_toggle=False, isActive=True):
     """
-    Sends an instant confirmation embed message back to the Discord channel when a product is ingested.
+    Sends an instant confirmation embed message back to the Discord channel when a product is added or toggled.
     """
     webhook_url = config.DEFAULT_DISCORD_WEBHOOK
     if not webhook_url or "YOUR_WEBHOOK" in webhook_url:
         return
 
+    if is_toggle:
+        if isActive:
+            title = "🟢 Product Re-Activated"
+            description = f"**{product_name}** has been set to **ACTIVE** and will be monitored on scheduled runs!"
+            color = 3066993  # Green
+            status_val = "🟢 Active"
+        else:
+            title = "🔴 Product Paused / Deactivated"
+            description = f"**{product_name}** has been set to **INACTIVE** and will be skipped on future runs."
+            color = 15158332  # Red
+            status_val = "🔴 Paused / Inactive"
+    else:
+        title = "✅ Product Ingested & Added to Tracker"
+        description = f"**{product_name}** has been registered in Firebase!"
+        color = 3447003  # Blue
+        status_val = "🟢 Active (Will check on next scheduled run)"
+
     embed = {
-        "title": "✅ Product Ingested & Added to Tracker",
-        "description": f"**{product_name}** has been registered in Firebase!",
-        "color": 3066993,  # Green
+        "title": title,
+        "description": description,
+        "color": color,
         "fields": [
             {"name": "Product ID", "value": f"`{product_id}`", "inline": True},
-            {"name": "Active Locations", "value": str(locations_count), "inline": True},
-            {"name": "Next Crawl Status", "value": "🟢 Active (Will check on next scheduled run)", "inline": False}
+            {"name": "Locations Monitored", "value": str(locations_count), "inline": True},
+            {"name": "Current Status", "value": status_val, "inline": False}
         ],
         "footer": {
-            "text": "Blinkit Stock Tracker Auto-Ingestion"
+            "text": "Blinkit Stock Tracker Auto-Toggle"
         }
     }
 
@@ -386,7 +424,8 @@ def send_discord_acknowledgement(product_id, product_name, locations_count):
     try:
         import requests
         requests.post(webhook_url, json=payload, timeout=10)
-        print(f"[!] Dispatched Discord acknowledgement embed for Product {product_id}.")
+        print(f"[!] Dispatched Discord toggle acknowledgement embed for Product {product_id} (isActive={isActive}).")
     except Exception as e:
         print(f"Warning: Failed to send Discord acknowledgement: {e}")
+
 
