@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 import re
 import firebase_admin
@@ -6,6 +7,9 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 from google.cloud.firestore_v1.base_query import FieldFilter
 import config
+
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
 
 db = None
 
