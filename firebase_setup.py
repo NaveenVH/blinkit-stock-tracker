@@ -1,5 +1,6 @@
 import os
 import json
+import re
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
@@ -148,7 +149,6 @@ def get_active_monitors():
                 description = prod_dict.get("description") or description
                 prod_is_active = prod_dict.get("isActive", prod_dict.get("active", True))
 
-        # Skip monitor if parent product is inactive
         if not prod_is_active:
             print(f"[-] Skipping monitor {doc_id}: Parent product {prod_id} is inactive (isActive=False).")
             continue
@@ -167,7 +167,6 @@ def get_active_monitors():
                 pincode = loc_dict.get("pincode", pincode)
                 loc_is_active = loc_dict.get("isActive", loc_dict.get("active", True))
 
-        # Skip monitor if parent location is inactive
         if not loc_is_active:
             print(f"[-] Skipping monitor {doc_id}: Parent location {loc_id} is inactive (isActive=False).")
             continue
@@ -243,3 +242,107 @@ def update_monitor_status(doc_id, status):
         print(f"Updated Firestore monitor {doc_id} stock status to: {status}")
     except Exception as e:
         print(f"Error updating Firestore document {doc_id}: {e}")
+
+def parse_and_add_product(text_or_url):
+    """
+    Parses a Blinkit link or text message (e.g. "Check out this product on Blinkit - Hot Wheels Chop N Bloc Die Cast Car\nhttps://blinkit.com/prn/x/prid/787541"),
+    extracts the product ID and title, saves the product in 'products' table (isActive=True),
+    and creates monitor entries in 'monitors' table for ALL active locations.
+    """
+    client = init_firebase()
+    if not client:
+        print("Error: Firebase client unavailable.")
+        return None
+
+    # 1. Extract Product ID
+    id_match = re.search(r'prid/(\d+)', text_or_url) or re.search(r'\b(\d{6,7})\b', text_or_url)
+    if not id_match:
+        print("Error: Could not extract product ID from input text.")
+        return None
+        
+    product_id = id_match.group(1).strip()
+    
+    # 2. Extract Product Name if present in text
+    title_match = re.search(r'Check out this product on Blinkit\s*-\s*([^\n\r]+)', text_or_url, re.IGNORECASE)
+    if title_match:
+        product_name = title_match.group(1).strip()
+    else:
+        lines = [line.strip() for line in text_or_url.splitlines() if line.strip() and not line.startswith("http")]
+        product_name = lines[0] if lines else f"Product ID {product_id}"
+
+    # Strip any trailing URL from product_name
+    if "http" in product_name:
+        product_name = re.sub(r'https?://\S+', '', product_name).strip()
+
+    print(f"[+] Parsed Input -> Product ID: {product_id} | Name: '{product_name}'")
+
+    # 3. Save/Upsert in 'products' table
+    products_ref = client.collection("products")
+    prod_doc_ref = products_ref.document(product_id)
+    prod_snap = prod_doc_ref.get()
+    
+    if prod_snap.exists:
+        existing_data = prod_snap.to_dict()
+        updates = {"isActive": True}
+        if not product_name.startswith("Product ID") and (not existing_data.get("product_name") or existing_data.get("product_name").startswith("Product ID")):
+            updates["product_name"] = product_name
+        prod_doc_ref.update(updates)
+        print(f"[*] Updated existing product {product_id} to isActive=True in 'products' table.")
+    else:
+        prod_doc_ref.set({
+            "product_id": product_id,
+            "product_name": product_name,
+            "description": "",
+            "isActive": True,
+            "created_at": firestore.SERVER_TIMESTAMP
+        })
+        print(f"[+] Created new product {product_id} in 'products' table.")
+
+    # 4. Fetch all active locations
+    locations_ref = client.collection("locations")
+    active_locations = list(locations_ref.where(filter=FieldFilter("isActive", "==", True)).stream())
+    
+    if not active_locations:
+        print("Warning: No active locations found in 'locations' table. Creating default location...")
+        default_loc_ref = locations_ref.add({
+            "pincode": "Central Bengaluru",
+            "latitude": config.DEFAULT_LATITUDE,
+            "longitude": config.DEFAULT_LONGITUDE,
+            "isActive": True,
+            "created_at": firestore.SERVER_TIMESTAMP
+        })
+        active_locations = [default_loc_ref[1].get()]
+
+    # 5. Create monitor entries for each active location
+    monitors_ref = client.collection("monitors")
+    webhook = config.DEFAULT_DISCORD_WEBHOOK or "https://discord.com/api/webhooks/YOUR_WEBHOOK_URL_HERE"
+    
+    monitors_created = 0
+    for loc_doc in active_locations:
+        loc_id = loc_doc.id
+        loc_data = loc_doc.to_dict()
+        pincode = loc_data.get("pincode", loc_id)
+        
+        mon_query = list(monitors_ref.where(filter=FieldFilter("product_id", "==", product_id)).where(filter=FieldFilter("location_id", "==", loc_id)).limit(1).stream())
+        if mon_query:
+            existing_id = mon_query[0].id
+            monitors_ref.document(existing_id).update({"isActive": True})
+            print(f"  [*] Monitor rule for Product {product_id} at location '{pincode}' already exists. Ensured isActive=True.")
+        else:
+            monitors_ref.add({
+                "product_id": product_id,
+                "location_id": loc_id,
+                "discord_webhook": webhook,
+                "isActive": True,
+                "last_stock_status": "unknown",
+                "last_checked_at": firestore.SERVER_TIMESTAMP
+            })
+            monitors_created += 1
+            print(f"  [+] Created new monitor rule for Product {product_id} at location '{pincode}'.")
+
+    return {
+        "product_id": product_id,
+        "product_name": product_name,
+        "locations_count": len(active_locations),
+        "monitors_created": monitors_created
+    }
