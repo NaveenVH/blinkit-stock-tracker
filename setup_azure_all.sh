@@ -44,7 +44,8 @@ if [ -f "$REPO_DIR/.env" ]; then
     set +a
 fi
 
-pkill -f "discord_bot.py" 2>/dev/null
+pkill -9 -f "discord_bot.py" 2>/dev/null
+kill -9 $(pgrep -f "discord_bot.py") 2>/dev/null
 nohup $PYTHON_BIN "$REPO_DIR/discord_bot.py" >> "$REPO_DIR/bot.log" 2>&1 &
 
 sleep 2
