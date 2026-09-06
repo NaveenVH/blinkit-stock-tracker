@@ -340,9 +340,48 @@ def parse_and_add_product(text_or_url):
             monitors_created += 1
             print(f"  [+] Created new monitor rule for Product {product_id} at location '{pincode}'.")
 
+    # Send Discord Acknowledgement back to channel
+    send_discord_acknowledgement(product_id, product_name, len(active_locations))
+
     return {
         "product_id": product_id,
         "product_name": product_name,
         "locations_count": len(active_locations),
         "monitors_created": monitors_created
     }
+
+def send_discord_acknowledgement(product_id, product_name, locations_count):
+    """
+    Sends an instant confirmation embed message back to the Discord channel when a product is ingested.
+    """
+    webhook_url = config.DEFAULT_DISCORD_WEBHOOK
+    if not webhook_url or "YOUR_WEBHOOK" in webhook_url:
+        return
+
+    embed = {
+        "title": "✅ Product Ingested & Added to Tracker",
+        "description": f"**{product_name}** has been registered in Firebase!",
+        "color": 3066993,  # Green
+        "fields": [
+            {"name": "Product ID", "value": f"`{product_id}`", "inline": True},
+            {"name": "Active Locations", "value": str(locations_count), "inline": True},
+            {"name": "Next Crawl Status", "value": "🟢 Active (Will check on next scheduled run)", "inline": False}
+        ],
+        "footer": {
+            "text": "Blinkit Stock Tracker Auto-Ingestion"
+        }
+    }
+
+    payload = {
+        "username": "Blinkit Ingestion Bot",
+        "avatar_url": "https://blinkit.com/images/favicon-96x96.png",
+        "embeds": [embed]
+    }
+
+    try:
+        import requests
+        requests.post(webhook_url, json=payload, timeout=10)
+        print(f"[!] Dispatched Discord acknowledgement embed for Product {product_id}.")
+    except Exception as e:
+        print(f"Warning: Failed to send Discord acknowledgement: {e}")
+
