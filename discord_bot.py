@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 import firebase_setup
 
 sys.stdout.reconfigure(encoding='utf-8')
+env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env')
+load_dotenv(dotenv_path=env_path)
 load_dotenv()
 
 BOT_TOKEN = os.getenv("DISCORD_BOT_TOKEN")
