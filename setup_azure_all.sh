@@ -36,6 +36,14 @@ CRON_JOB="*/30 * * * * cd $REPO_DIR && $PYTHON_BIN main.py >> $REPO_DIR/tracker.
 # 5. Configure Task 2: Background Discord Listener Bot (discord_bot.py)
 echo "[4/4] Setting up Task 2: Background Discord Bot Listener (discord_bot.py)..."
 touch "$REPO_DIR/bot.log"
+
+if [ -f "$REPO_DIR/.env" ]; then
+    echo "[+] Loading environment variables from .env..."
+    set -a
+    source "$REPO_DIR/.env"
+    set +a
+fi
+
 pkill -f "discord_bot.py" 2>/dev/null
 nohup $PYTHON_BIN "$REPO_DIR/discord_bot.py" >> "$REPO_DIR/bot.log" 2>&1 &
 
