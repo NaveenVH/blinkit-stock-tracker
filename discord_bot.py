@@ -1,5 +1,6 @@
 import os
 import sys
+import re
 import discord
 from dotenv import load_dotenv
 import firebase_setup
@@ -11,7 +12,7 @@ BOT_TOKEN = os.getenv("DISCORD_BOT_TOKEN")
 
 if not BOT_TOKEN:
     print("WARNING: DISCORD_BOT_TOKEN environment variable is not set.")
-    print("To run the Discord listener bot, set DISCORD_BOT_TOKEN in your .env or environment secrets.")
+    sys.exit(1)
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -20,8 +21,13 @@ client = discord.Client(intents=intents)
 
 @client.event
 async def on_ready():
-    print(f"[+] Discord Bot Listener online as {client.user} (ID: {client.user.id})")
-    print("Listening for incoming Blinkit product links...")
+    print(f"\n[+] Discord Bot Listener online as {client.user} (ID: {client.user.id})")
+    print("Listing accessible channels:")
+    for guild in client.guilds:
+        print(f" Guild: {guild.name} (ID: {guild.id})")
+        for channel in guild.text_channels:
+            print(f"   - Channel: #{channel.name} (ID: {channel.id})")
+    print("Ready and listening for incoming Blinkit product links...")
 
 @client.event
 async def on_message(message):
@@ -30,13 +36,19 @@ async def on_message(message):
         return
 
     content = message.content.strip()
-    
-    # Check if message contains a Blinkit link or product ID pattern
-    if "blinkit.com/prn/x/prid/" in content or "prid/" in content:
-        print(f"\n[!] Detected Blinkit product link from {message.author}:")
-        print(f"    Message: {content}")
+    print(f"\n[!] INCOMING DISCORD MSG from {message.author} in #{message.channel}: '{content}'")
 
-        result = firebase_setup.parse_and_add_product(content)
+    # Combine content with any embed text/url
+    text_to_check = content
+    if message.embeds:
+        for emb in message.embeds:
+            text_to_check += f" {emb.title or ''} {emb.description or ''} {emb.url or ''}"
+
+    # Check if message contains a Blinkit link or product ID pattern or 'Check out'
+    if "blinkit.com/prn/x/prid/" in text_to_check or "prid/" in text_to_check or "Check out" in text_to_check or re.search(r'\b7\d{5}\b', text_to_check):
+        print(f"[+] Extracting Blinkit product from: {text_to_check}")
+
+        result = firebase_setup.parse_and_add_product(text_to_check)
         
         if result:
             embed = discord.Embed(
@@ -46,18 +58,13 @@ async def on_message(message):
             )
             embed.add_field(name="Product ID", value=f"`{result['product_id']}`", inline=True)
             embed.add_field(name="Active Locations", value=str(result['locations_count']), inline=True)
-            embed.add_field(name="Status", value="🟢 Active (Will check on next run)", inline=False)
+            embed.add_field(name="Next Crawl Status", value="🟢 Active (Will check on next run)", inline=False)
             embed.set_footer(text="Blinkit Stock Tracker Auto-Ingestion")
 
             await message.reply(embed=embed)
             print(f"[+] Sent Discord confirmation reply for Product {result['product_id']}.")
-        else:
-            await message.reply("⚠️ Could not extract product ID from the link. Please check the URL format.")
 
 def run_bot():
-    if not BOT_TOKEN:
-        print("Error: Cannot start Discord bot without DISCORD_BOT_TOKEN.")
-        sys.exit(1)
     client.run(BOT_TOKEN)
 
 if __name__ == "__main__":
