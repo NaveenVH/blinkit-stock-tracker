@@ -281,6 +281,8 @@ def parse_and_add_product(text_or_url):
     prod_doc_ref = products_ref.document(product_id)
     prod_snap = prod_doc_ref.get()
     
+    is_new_product = not prod_snap.exists
+
     if prod_snap.exists:
         existing_data = prod_snap.to_dict()
         updates = {"isActive": True}
@@ -340,8 +342,11 @@ def parse_and_add_product(text_or_url):
             monitors_created += 1
             print(f"  [+] Created new monitor rule for Product {product_id} at location '{pincode}'.")
 
-    # Send Discord Acknowledgement back to channel
-    send_discord_acknowledgement(product_id, product_name, len(active_locations))
+    # Send Discord Acknowledgement ONLY if newly added product or new monitor rule
+    if is_new_product or monitors_created > 0:
+        send_discord_acknowledgement(product_id, product_name, len(active_locations))
+    else:
+        print(f"[-] Product {product_id} is already registered in Firebase. Skipping Discord acknowledgement.")
 
     return {
         "product_id": product_id,
