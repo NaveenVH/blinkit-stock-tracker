@@ -55,3 +55,4 @@ tail -n 10 "$REPO_DIR/bot.log"
 
 echo "--------------------------------------------------"
 echo "Setup Complete! Both tasks are live and running on your Azure VM."
+

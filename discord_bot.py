@@ -31,8 +31,8 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    # Ignore messages sent by the bot itself
-    if message.author == client.user:
+    # Ignore messages sent by any bot (including webhooks) or by self
+    if message.author.bot or message.webhook_id or message.author == client.user:
         return
 
     content = message.content.strip()
@@ -48,21 +48,10 @@ async def on_message(message):
     if "blinkit.com/prn/x/prid/" in text_to_check or "prid/" in text_to_check or "Check out" in text_to_check or re.search(r'\b7\d{5}\b', text_to_check):
         print(f"[+] Extracting Blinkit product from: {text_to_check}")
 
+        # parse_and_add_product automatically dispatches a single formatted Webhook embed to Discord
         result = firebase_setup.parse_and_add_product(text_to_check)
-        
         if result:
-            embed = discord.Embed(
-                title="✅ Product Added to Stock Tracker",
-                description=f"**{result['product_name']}** has been registered in Firebase!",
-                color=0x2ecc71
-            )
-            embed.add_field(name="Product ID", value=f"`{result['product_id']}`", inline=True)
-            embed.add_field(name="Active Locations", value=str(result['locations_count']), inline=True)
-            embed.add_field(name="Next Crawl Status", value="🟢 Active (Will check on next run)", inline=False)
-            embed.set_footer(text="Blinkit Stock Tracker Auto-Ingestion")
-
-            await message.reply(embed=embed)
-            print(f"[+] Sent Discord confirmation reply for Product {result['product_id']}.")
+            print(f"[+] Processed product {result.get('product_id')} -> {result.get('status_label', 'Registered/Toggled')}")
 
 def run_bot():
     client.run(BOT_TOKEN)

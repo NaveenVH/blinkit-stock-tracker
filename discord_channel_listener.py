@@ -56,14 +56,7 @@ def process_text_message(text):
     Parses message text, registers product in Firebase, and posts confirmation back to Discord.
     """
     result = firebase_setup.parse_and_add_product(text)
-    if result:
-        send_discord_confirmation(
-            product_id=result['product_id'],
-            product_name=result['product_name'],
-            locations_count=result['locations_count']
-        )
-        return result
-    return None
+    return result
 
 def poll_channel_messages():
     """
