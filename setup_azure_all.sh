@@ -31,7 +31,8 @@ $PYTHON_BIN -m pip install -q -r requirements.txt
 echo "[3/4] Setting up Task 1: 30-Minute Cron Job (main.py)..."
 touch "$REPO_DIR/tracker.log"
 CRON_JOB="*/30 * * * * cd $REPO_DIR && $PYTHON_BIN main.py >> $REPO_DIR/tracker.log 2>&1"
-(crontab -l 2>/dev/null | grep -v "main.py"; echo "$CRON_JOB") | crontab -
+# Purge all old crons (main.py, discord_bot, channel_listener, webhook_server) and set fresh cron
+(crontab -l 2>/dev/null | grep -v -E "main.py|discord_bot|discord_channel|webhook_server"; echo "$CRON_JOB") | crontab -
 
 # 5. Configure Task 2: Background Discord Listener Bot (discord_bot.py)
 echo "[4/4] Setting up Task 2: Background Discord Bot Listener (discord_bot.py)..."
@@ -44,8 +45,11 @@ if [ -f "$REPO_DIR/.env" ]; then
     set +a
 fi
 
+# Kill all previous bot/listener instances
 pkill -9 -f "discord_bot.py" 2>/dev/null
-kill -9 $(pgrep -f "discord_bot.py") 2>/dev/null
+pkill -9 -f "discord_channel_listener.py" 2>/dev/null
+pkill -9 -f "webhook_server.py" 2>/dev/null
+sleep 1
 nohup $PYTHON_BIN "$REPO_DIR/discord_bot.py" >> "$REPO_DIR/bot.log" 2>&1 &
 
 sleep 2
