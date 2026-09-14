@@ -1,5 +1,4 @@
 import os
-import sys
 import json
 import re
 import firebase_admin
@@ -7,9 +6,6 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 from google.cloud.firestore_v1.base_query import FieldFilter
 import config
-
-if hasattr(sys.stdout, 'reconfigure'):
-    sys.stdout.reconfigure(encoding='utf-8')
 
 db = None
 
@@ -114,6 +110,7 @@ def get_active_monitors():
             "location_id": loc_id,
             "discord_webhook": config.DEFAULT_DISCORD_WEBHOOK or "https://discord.com/api/webhooks/YOUR_WEBHOOK_HERE",
             "isActive": True,
+            "source": "blinkit",
             "last_stock_status": "unknown",
             "last_checked_at": firestore.SERVER_TIMESTAMP
         }
@@ -130,23 +127,30 @@ def get_active_monitors():
             "longitude": config.DEFAULT_LONGITUDE,
             "discord_webhook": monitor_data["discord_webhook"],
             "isActive": True,
+            "source": "blinkit",
             "last_stock_status": "unknown"
         }]
 
     active_monitors = []
+    bigbasket_products_ref = client.collection("bigbasket_products")
+
     for doc in docs:
         mon_data = doc.to_dict()
         doc_id = doc.id
         
         prod_id = str(mon_data.get("product_id", "")).strip()
         loc_id = mon_data.get("location_id")
+        mon_source = mon_data.get("source", "blinkit").lower()
         
-        # 1. Product details & active check
+        # 1. Product details & active check (from bigbasket_products or products)
         product_name = mon_data.get("product_name")
         description = mon_data.get("description", "")
         prod_is_active = True
+        
+        target_prod_ref = bigbasket_products_ref if mon_source == "bigbasket" else products_ref
+        
         if prod_id:
-            prod_snap = products_ref.document(prod_id).get()
+            prod_snap = target_prod_ref.document(prod_id).get()
             if prod_snap.exists:
                 prod_dict = prod_snap.to_dict()
                 product_name = prod_dict.get("product_name") or product_name
@@ -154,10 +158,10 @@ def get_active_monitors():
                 prod_is_active = prod_dict.get("isActive", prod_dict.get("active", True))
 
         if not prod_is_active:
-            print(f"[-] Skipping monitor {doc_id}: Parent product {prod_id} is inactive (isActive=False).")
+            print(f"[-] Skipping monitor {doc_id}: Parent product {prod_id} ({mon_source}) is inactive (isActive=False).")
             continue
 
-        # 2. Location details & active check
+        # 2. Location details & active check (shared locations table)
         lat = mon_data.get("latitude")
         lon = mon_data.get("longitude")
         pincode = mon_data.get("pincode") or mon_data.get("location_name")
@@ -186,48 +190,62 @@ def get_active_monitors():
             "pincode": pincode or f"({lat}, {lon})",
             "discord_webhook": mon_data.get("discord_webhook"),
             "isActive": True,
+            "source": mon_source,
             "last_stock_status": mon_data.get("last_stock_status", "unknown")
         }
         active_monitors.append(combined)
 
     return active_monitors
 
-def update_product_details(product_id, description=None, product_name=None, isActive=True):
+def is_generic_title(title):
+    if not title:
+        return True
+    t = str(title).strip().lower()
+    return t.startswith("product id") or t.startswith("bigbasket product") or t.startswith("blinkit product") or t == "none"
+
+def update_product_details(product_id, description=None, product_name=None, isActive=True, source="blinkit"):
     """
-    Saves or updates product description, name, and isActive in the separate 'products' collection.
+    Saves or updates product description, name, and isActive in the platform-specific collection
+    ('bigbasket_products' for BigBasket or 'products' for Blinkit).
     """
     client = init_firebase()
     if not client or not product_id:
         return
         
+    collection_name = "bigbasket_products" if str(source).lower() == "bigbasket" else "products"
+    
     try:
-        prod_ref = client.collection("products").document(str(product_id).strip())
+        prod_ref = client.collection(collection_name).document(str(product_id).strip())
         prod_snap = prod_ref.get()
         
         updates = {}
         if description is not None:
             updates["description"] = description
-        if product_name is not None and not product_name.startswith("Product ID"):
+        if product_name is not None and not is_generic_title(product_name):
             updates["product_name"] = product_name
         if isActive is not None:
             updates["isActive"] = bool(isActive)
             
         if prod_snap.exists:
+            existing = prod_snap.to_dict()
+            if is_generic_title(existing.get("product_name")) and not is_generic_title(product_name):
+                updates["product_name"] = product_name
             if updates:
                 prod_ref.update(updates)
-                print(f"[*] Updated product details in 'products' table for ID {product_id}")
+                print(f"[*] Updated product details in '{collection_name}' table for ID {product_id}")
         else:
             doc_data = {
                 "product_id": str(product_id).strip(),
                 "product_name": product_name or f"Product ID {product_id}",
                 "description": description or "",
                 "isActive": bool(isActive),
+                "source": source.lower(),
                 "created_at": firestore.SERVER_TIMESTAMP
             }
             prod_ref.set(doc_data)
-            print(f"[+] Created entry in 'products' table for ID {product_id}")
+            print(f"[+] Created entry in '{collection_name}' table for ID {product_id}")
     except Exception as e:
-        print(f"Error updating product details in Firestore: {e}")
+        print(f"Error updating product details in Firestore ({collection_name}): {e}")
 
 def update_monitor_status(doc_id, status):
     """
@@ -249,86 +267,113 @@ def update_monitor_status(doc_id, status):
 
 def parse_and_add_product(text_or_url):
     """
-    Parses a Blinkit link or text message (e.g. "Check out this product on Blinkit - Hot Wheels Chop N Bloc Die Cast Car\nhttps://blinkit.com/prn/x/prid/787541"),
-    extracts the product ID and title, saves the product in 'products' table (isActive=True),
-    and creates monitor entries in 'monitors' table for ALL active locations.
+    Parses a Blinkit or BigBasket product link/text message.
+    Extracts the product ID, platform source ('blinkit' vs 'bigbasket'), and product title.
+    Saves BigBasket products to 'bigbasket_products' table and Blinkit products to 'products' table.
+    Creates monitor entries in the shared 'monitors' table (with shared locations).
     """
     client = init_firebase()
     if not client:
         print("Error: Firebase client unavailable.")
         return None
 
-    # 1. Extract Product ID
-    id_match = re.search(r'prid/(\d+)', text_or_url) or re.search(r'\b(\d{6,7})\b', text_or_url)
-    if not id_match:
+    # 1. Detect Source Platform and Extract Product ID & Title
+    source = "blinkit"
+    product_id = None
+    product_name = None
+
+    bb_match = re.search(r'bigbasket\.com/pd/(\d+)', text_or_url, re.IGNORECASE) or re.search(r'/pd/(\d+)', text_or_url, re.IGNORECASE)
+    bk_match = re.search(r'blinkit\.com/prn/x/prid/(\d+)', text_or_url, re.IGNORECASE) or re.search(r'prid/(\d+)', text_or_url, re.IGNORECASE)
+
+    if bb_match:
+        source = "bigbasket"
+        product_id = bb_match.group(1).strip()
+        # Extract title slug from URL if available
+        slug_match = re.search(r'/pd/\d+/([a-zA-Z0-9\-]+)', text_or_url)
+        if slug_match and slug_match.group(1):
+            raw_slug = slug_match.group(1).replace('-', ' ').strip()
+            product_name = ' '.join(word.capitalize() for word in raw_slug.split())
+    elif bk_match:
+        source = "blinkit"
+        product_id = bk_match.group(1).strip()
+    else:
+        # Fallback numeric ID
+        gen_match = re.search(r'\b(\d{6,8})\b', text_or_url)
+        if gen_match:
+            product_id = gen_match.group(1).strip()
+            source = "bigbasket" if "bigbasket" in text_or_url.lower() else "blinkit"
+
+    if not product_id:
         print("Error: Could not extract product ID from input text.")
         return None
-        
-    product_id = id_match.group(1).strip()
-    
-    # 2. Extract Product Name if present in text
-    title_match = re.search(r'Check out this product on Blinkit\s*-\s*([^\n\r]+)', text_or_url, re.IGNORECASE)
+
+    # 2. Extract Product Name from preceding message text if available
+    title_match = re.search(r'Check out this product on (?:Blinkit|BigBasket)\s*-\s*([^\n\r]+)', text_or_url, re.IGNORECASE)
     if title_match:
         product_name = title_match.group(1).strip()
-    else:
+    elif not product_name:
         lines = [line.strip() for line in text_or_url.splitlines() if line.strip() and not line.startswith("http")]
         product_name = lines[0] if lines else f"Product ID {product_id}"
 
-    # Strip any trailing URL from product_name
     if "http" in product_name:
         product_name = re.sub(r'https?://\S+', '', product_name).strip()
+    if not product_name:
+        product_name = f"Product ID {product_id}"
 
-    print(f"[+] Parsed Input -> Product ID: {product_id} | Name: '{product_name}'")
+    target_table = "bigbasket_products" if source == "bigbasket" else "products"
+    print(f"[+] Parsed Input -> Source: {source.upper()} | Product ID: {product_id} | Name: '{product_name}' | Table: '{target_table}'")
 
-    # 3. Check if Product exists in 'products' table for Toggle logic
-    products_ref = client.collection("products")
+    # 3. Check if Product exists in target table for Toggle logic
+    products_ref = client.collection(target_table)
     monitors_ref = client.collection("monitors")
     prod_doc_ref = products_ref.document(product_id)
     prod_snap = prod_doc_ref.get()
     
+    is_new_product = not prod_snap.exists
+
     if prod_snap.exists:
         existing_data = prod_snap.to_dict()
         current_active = existing_data.get("isActive", existing_data.get("active", True))
-        
-        # TOGGLE STATUS: If currently True -> set False (inactive); if currently False -> set True (active)
         new_active = not current_active
         
         updates = {"isActive": new_active}
-        if not product_name.startswith("Product ID") and (not existing_data.get("product_name") or existing_data.get("product_name").startswith("Product ID")):
+        if not is_generic_title(product_name):
             updates["product_name"] = product_name
         prod_doc_ref.update(updates)
         
-        # Toggle all corresponding monitors for this product
+        # Toggle corresponding monitors
         mon_docs = list(monitors_ref.where(filter=FieldFilter("product_id", "==", product_id)).stream())
         for mdoc in mon_docs:
             monitors_ref.document(mdoc.id).update({"isActive": new_active})
 
-        resolved_name = existing_data.get("product_name") or product_name
+        resolved_name = product_name if not is_generic_title(product_name) else (existing_data.get("product_name") or product_name)
         status_label = "PAUSED / INACTIVE 🔴" if not new_active else "ACTIVATED 🟢"
-        print(f"[*] TOGGLED product {product_id} ('{resolved_name}') to isActive={new_active} ({status_label}).")
+        print(f"[*] TOGGLED {source.upper()} product {product_id} ('{resolved_name}') to isActive={new_active} ({status_label}).")
 
-        # Send Discord Toggle Acknowledgement
-        send_discord_acknowledgement(product_id, resolved_name, len(mon_docs) or 1, is_toggle=True, isActive=new_active)
+        send_discord_acknowledgement(product_id, resolved_name, len(mon_docs) or 1, is_toggle=True, isActive=new_active, source=source)
 
         return {
             "product_id": product_id,
             "product_name": resolved_name,
+            "source": source,
             "isActive": new_active,
             "toggled": True,
             "status_label": status_label
         }
+
     else:
-        # NEW PRODUCT: Create entry in 'products' table with isActive=True
+        # NEW PRODUCT: Create entry in target table
         prod_doc_ref.set({
             "product_id": product_id,
             "product_name": product_name,
             "description": "",
+            "source": source,
             "isActive": True,
             "created_at": firestore.SERVER_TIMESTAMP
         })
-        print(f"[+] Created new product {product_id} in 'products' table.")
+        print(f"[+] Created new product {product_id} in '{target_table}' table.")
 
-    # 4. Fetch all active locations
+    # 4. Fetch all active locations (shared locations table)
     locations_ref = client.collection("locations")
     active_locations = list(locations_ref.where(filter=FieldFilter("isActive", "==", True)).stream())
     
@@ -343,10 +388,10 @@ def parse_and_add_product(text_or_url):
         })
         active_locations = [default_loc_ref[1].get()]
 
-    # 5. Create monitor entries for each active location
+    # 5. Create monitor entries in shared 'monitors' table
     webhook = config.DEFAULT_DISCORD_WEBHOOK or "https://discord.com/api/webhooks/YOUR_WEBHOOK_URL_HERE"
-    
     monitors_created = 0
+
     for loc_doc in active_locations:
         loc_id = loc_doc.id
         loc_data = loc_doc.to_dict()
@@ -355,54 +400,62 @@ def parse_and_add_product(text_or_url):
         mon_query = list(monitors_ref.where(filter=FieldFilter("product_id", "==", product_id)).where(filter=FieldFilter("location_id", "==", loc_id)).limit(1).stream())
         if mon_query:
             existing_id = mon_query[0].id
-            monitors_ref.document(existing_id).update({"isActive": True})
-            print(f"  [*] Monitor rule for Product {product_id} at location '{pincode}' already exists. Ensured isActive=True.")
+            monitors_ref.document(existing_id).update({"isActive": True, "source": source})
+            print(f"  [*] Monitor rule for {source.upper()} Product {product_id} at location '{pincode}' already exists. Ensured isActive=True.")
         else:
             monitors_ref.add({
                 "product_id": product_id,
                 "location_id": loc_id,
                 "discord_webhook": webhook,
+                "source": source,
                 "isActive": True,
                 "last_stock_status": "unknown",
                 "last_checked_at": firestore.SERVER_TIMESTAMP
             })
             monitors_created += 1
-            print(f"  [+] Created new monitor rule for Product {product_id} at location '{pincode}'.")
+            print(f"  [+] Created new monitor rule for {source.upper()} Product {product_id} at location '{pincode}'.")
 
-    # Send Discord Acknowledgement for NEW product
-    send_discord_acknowledgement(product_id, product_name, len(active_locations), is_toggle=False, isActive=True)
+    send_discord_acknowledgement(product_id, product_name, len(active_locations), is_toggle=False, isActive=True, source=source)
 
     return {
         "product_id": product_id,
         "product_name": product_name,
+        "source": source,
         "isActive": True,
         "locations_count": len(active_locations),
         "monitors_created": monitors_created
     }
 
-def send_discord_acknowledgement(product_id, product_name, locations_count, is_toggle=False, isActive=True):
+def send_discord_acknowledgement(product_id, product_name, locations_count, is_toggle=False, isActive=True, source="blinkit"):
     """
-    Sends an instant confirmation embed message back to the Discord channel when a product is added or toggled.
+    Sends an instant confirmation embed message back to Discord when a product is added or toggled,
+    with explicit platform source badges ([🟡 Blinkit] / [🔴 BigBasket]).
     """
     webhook_url = config.DEFAULT_DISCORD_WEBHOOK
     if not webhook_url or "YOUR_WEBHOOK" in webhook_url:
         return
 
+    is_bb = (str(source).lower() == "bigbasket")
+    badge = "[🔴 BigBasket]" if is_bb else "[🟡 Blinkit]"
+    platform_name = "BigBasket" if is_bb else "Blinkit"
+    bot_username = "BigBasket Ingestion Bot" if is_bb else "Blinkit Ingestion Bot"
+    bot_avatar = "https://www.bigbasket.com/favicon.ico" if is_bb else "https://blinkit.com/images/favicon-96x96.png"
+
     if is_toggle:
         if isActive:
-            title = "🟢 Product Re-Activated"
-            description = f"**{product_name}** has been set to **ACTIVE** and will be monitored on scheduled runs!"
+            title = f"{badge} 🟢 Product Re-Activated"
+            description = f"**{product_name}** ({platform_name}) has been set to **ACTIVE** and will be monitored!"
             color = 3066993  # Green
             status_val = "🟢 Active"
         else:
-            title = "🔴 Product Paused / Deactivated"
-            description = f"**{product_name}** has been set to **INACTIVE** and will be skipped on future runs."
+            title = f"{badge} 🔴 Product Paused / Deactivated"
+            description = f"**{product_name}** ({platform_name}) has been set to **INACTIVE**."
             color = 15158332  # Red
             status_val = "🔴 Paused / Inactive"
     else:
-        title = "✅ Product Ingested & Added to Tracker"
-        description = f"**{product_name}** has been registered in Firebase!"
-        color = 3447003  # Blue
+        title = f"{badge} ✅ Product Ingested & Added to Tracker"
+        description = f"**{product_name}** has been registered in Firebase `{platform_name.lower()}_products` table!"
+        color = 15158332 if is_bb else 16766464
         status_val = "🟢 Active (Will check on next scheduled run)"
 
     embed = {
@@ -410,26 +463,56 @@ def send_discord_acknowledgement(product_id, product_name, locations_count, is_t
         "description": description,
         "color": color,
         "fields": [
+            {"name": "Source Platform", "value": badge, "inline": True},
             {"name": "Product ID", "value": f"`{product_id}`", "inline": True},
             {"name": "Locations Monitored", "value": str(locations_count), "inline": True},
             {"name": "Current Status", "value": status_val, "inline": False}
         ],
         "footer": {
-            "text": "Blinkit Stock Tracker Auto-Toggle"
+            "text": f"{platform_name} Stock Tracker Auto-Ingestion"
         }
     }
 
     payload = {
-        "username": "Blinkit Ingestion Bot",
-        "avatar_url": "https://blinkit.com/images/favicon-96x96.png",
+        "username": bot_username,
+        "avatar_url": bot_avatar,
         "embeds": [embed]
     }
 
-    try:
-        import requests
-        requests.post(webhook_url, json=payload, timeout=10)
-        print(f"[!] Dispatched Discord toggle acknowledgement embed for Product {product_id} (isActive={isActive}).")
-    except Exception as e:
-        print(f"Warning: Failed to send Discord acknowledgement: {e}")
+    sent_success = False
+    import requests
+
+    if webhook_url and "YOUR_WEBHOOK" not in webhook_url:
+        try:
+            resp = requests.post(webhook_url, json=payload, timeout=10)
+            if resp.status_code in [200, 204]:
+                print(f"[!] Dispatched Webhook acknowledgement embed for {platform_name} Product {product_id}.")
+                sent_success = True
+            else:
+                print(f"[-] Webhook failed ({resp.status_code}). Attempting Bot API fallback...")
+        except Exception as e:
+            print(f"[-] Webhook exception ({e}). Attempting Bot API fallback...")
+
+    # Fallback to Discord Bot REST API if Webhook failed or was missing
+    if not sent_success:
+        bot_token = config.DISCORD_BOT_TOKEN
+        channel_id = config.DISCORD_CHANNEL_ID
+        if bot_token and channel_id:
+            bot_url = f"https://discord.com/api/v9/channels/{channel_id}/messages"
+            bot_headers = {
+                "Authorization": f"Bot {bot_token}",
+                "Content-Type": "application/json"
+            }
+            bot_payload = {"embeds": [embed]}
+            try:
+                bot_resp = requests.post(bot_url, headers=bot_headers, json=bot_payload, timeout=10)
+                if bot_resp.status_code in [200, 201]:
+                    print(f"[!] Dispatched Bot API acknowledgement embed for {platform_name} Product {product_id}.")
+                else:
+                    print(f"[-] Bot API returned status {bot_resp.status_code}: {bot_resp.text}")
+            except Exception as e:
+                print(f"[-] Bot API exception: {e}")
+
+
 
 

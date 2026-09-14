@@ -9,8 +9,8 @@ from dotenv import load_dotenv
 sys.stdout.reconfigure(encoding='utf-8')
 load_dotenv()
 
-# Discord Webhook URL for posting confirmations back to Discord
-DISCORD_WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL", "https://discord.com/api/webhooks/1507429640279425065/IRy10lKzooBzKFjr6cNIsHpkVBV29zo2TLpj2GZXMRGxHrhlOZqA_QuC7fuAyua9xOyO")
+DISCORD_WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL")
+
 # Optional Bot Token or User Auth Token for reading messages from channel
 DISCORD_TOKEN = os.getenv("DISCORD_BOT_TOKEN") or os.getenv("DISCORD_USER_TOKEN")
 # Target Channel ID (if reading via Discord API)
@@ -87,10 +87,11 @@ def poll_channel_messages():
 
                 processed_message_ids.add(msg_id)
                 
-                if "blinkit.com/prn/x/prid/" in content or "prid/" in content:
-                    print(f"\n[!] Detected new Blinkit product link in Discord Channel:")
+                if "blinkit.com/prn/x/prid/" in content or "prid/" in content or "bigbasket.com/pd/" in content or "/pd/" in content:
+                    print(f"\n[!] Detected new product link in Discord Channel:")
                     print(f"    Message: {content}")
                     process_text_message(content)
+
         else:
             print(f"Warning: Discord API returned status {response.status_code}: {response.text}")
     except Exception as e:

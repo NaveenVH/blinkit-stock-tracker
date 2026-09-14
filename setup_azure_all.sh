@@ -1,12 +1,13 @@
 #!/bin/bash
-# Azure VM Deployment & Verification Script for Blinkit Stock Tracker
+# Azure VM Deployment & Verification Script for Ecommerce Stock Tracker (Blinkit + BigBasket)
 
 REPO_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 cd "$REPO_DIR" || exit 1
 
 echo "=================================================="
-echo "      AZURE VM BLINKIT BOT SETUP & STARTUP        "
+echo "   AZURE VM ECOMMERCE BOT (BLINKIT + BIGBASKET)   "
 echo "=================================================="
+
 
 # 1. Pull latest code from GitHub
 echo "[1/4] Pulling latest code from GitHub..."

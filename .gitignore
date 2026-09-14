@@ -1,18 +1,36 @@
-# Private Credentials
+# Private Credentials & Keys
 serviceAccountKey.json
+serviceAccountKey*.json
+*credentials*.json
+*.secret
+*.pem
+*.key
+
+# Environment Variables
 .env
+.env.local
+.env.*.local
+!.env.example
 
-# Playwright Debug files
+# Temp & Debug Directories
+scratch/
+playwright_user_data/
+.system_generated/
+.gemini/
+
+# Playwright & Debug Media Output
 *.png
+*.log
 
-# Python environment & cache
+# Python Environment & Cache
 __pycache__/
 *.pyc
 .pytest_cache/
 venv/
 .env/
 
-# IDE files
+# IDE & OS Metadata
 .vscode/
 .idea/
-
+.DS_Store
+Thumbs.db

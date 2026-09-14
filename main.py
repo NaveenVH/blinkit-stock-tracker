@@ -10,11 +10,12 @@ sys.stdout.reconfigure(encoding='utf-8')
 def process_monitor(monitor):
     """
     Processes a single product-location monitor rule:
-    Crawls stock status, updates product details (name & description) in Firestore 'products' table,
-    updates monitor stock status, and dispatches Discord notifications ONLY if the product is in stock.
+    Crawls stock status, updates product details in Firestore platform product table,
+    updates monitor stock status, and dispatches Discord notifications ONLY if product is in stock.
     """
     doc_id = monitor.get("id")
     product_id = monitor.get("product_id")
+    source = monitor.get("source", "blinkit")
     product_name = monitor.get("product_name", f"Product ID {product_id}")
     lat = monitor.get("latitude")
     lon = monitor.get("longitude")
@@ -29,46 +30,49 @@ def process_monitor(monitor):
         print(f"[-] Skipping monitor doc {doc_id} because product_id is missing.")
         return
 
-    print(f"\n[+] Starting Monitor: Product ID {product_id} at ({lat}, {lon})")
+    print(f"\n[+] Starting Monitor: [{source.upper()}] Product ID {product_id} at ({lat}, {lon})")
     
     # Execute PDP crawl
-    crawl_result = crawler.crawl_stock(lat, lon, product_id)
+    crawl_result = crawler.crawl_stock(lat, lon, product_id, source=source)
     
     if crawl_result["success"]:
         current_status = crawl_result["status"]
         matched_title = crawl_result["matched_title"] or product_name
-        description = crawl_result["description"]
+        description = crawl_result.get("description", "")
         price = crawl_result["price"]
         link = crawl_result["link"]
         
-        print(f"[Result] Product ID {product_id}: '{matched_title}' | price='{price}' | status='{current_status}'")
+        print(f"[Result] [{source.upper()}] Product ID {product_id}: '{matched_title}' | price='{price}' | status='{current_status}'")
         
-        # Save / Auto-update product details (including description) in separate 'products' table in Firestore
+        # Save / Auto-update product details in separate 'products' or 'bigbasket_products' table in Firestore
         firebase_setup.update_product_details(
             product_id=product_id,
             description=description,
-            product_name=matched_title
+            product_name=matched_title,
+            source=source
         )
         
         # Send Discord notification ONLY if product is in stock
         if current_status == "in_stock":
-            print(f"[!] Product IN STOCK! Sending notification for {matched_title} at {location_name}")
+            print(f"[!] Product IN STOCK! Sending notification for [{source.upper()}] {matched_title} at {location_name}")
             discord_notifier = notifier.get_notifier(webhook_url)
             discord_notifier.send(
                 product_name=matched_title,
                 price=price,
                 status=current_status,
                 details_link=link,
-                location_name=location_name
+                location_name=location_name,
+                source=source
             )
         else:
-            print(f"[-] Status is '{current_status}'. Skipping Discord notification for {matched_title} at {location_name}.")
+            print(f"[-] Status is '{current_status}'. Skipping Discord notification for [{source.upper()}] {matched_title} at {location_name}.")
         
         # Update last checked status/timestamp in Firestore
         firebase_setup.update_monitor_status(doc_id, current_status)
             
     else:
-        print(f"[Error] Crawl failed for Product ID {product_id}: {crawl_result['error']}")
+        print(f"[Error] Crawl failed for [{source.upper()}] Product ID {product_id}: {crawl_result['error']}")
+
 
 def main():
     print("Fetching active monitors (isActive == True) from database...")

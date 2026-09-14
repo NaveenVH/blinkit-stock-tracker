@@ -13,8 +13,11 @@ FIREBASE_SERVICE_ACCOUNT_FILE = os.getenv("FIREBASE_SERVICE_ACCOUNT_FILE", "serv
 
 # Fallback configurations if Firestore database is empty or not used
 DEFAULT_DISCORD_WEBHOOK = os.getenv("DISCORD_WEBHOOK_URL")
+DISCORD_BOT_TOKEN = os.getenv("DISCORD_BOT_TOKEN")
+DISCORD_CHANNEL_ID = os.getenv("DISCORD_CHANNEL_ID")
 DEFAULT_PRODUCT_NAME = os.getenv("TARGET_PRODUCT", "Hot Wheels Batmobile Die Cast Car")
 DEFAULT_PRODUCT_ID = os.getenv("TARGET_PRODUCT_ID", "804937")
 DEFAULT_LATITUDE = float(os.getenv("LATITUDE", "12.9716"))  # Bangalore default
 DEFAULT_LONGITUDE = float(os.getenv("LONGITUDE", "77.5946")) # Bangalore default
+
 
