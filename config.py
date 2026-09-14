@@ -1,8 +1,25 @@
 import os
-from dotenv import load_dotenv
+import builtins
+import datetime
 
-# Load local .env file if it exists
+# Configure timestamped print formatting for all logs (tracker.log and bot.log)
+_original_print = builtins.print
+def timestamped_print(*args, **kwargs):
+    now_str = datetime.datetime.now().strftime("[%Y-%m-%d %H:%M:%S]")
+    if args and isinstance(args[0], str) and args[0].startswith("\n"):
+        _original_print(f"\n{now_str} " + args[0][1:], *args[1:], **kwargs)
+    else:
+        _original_print(now_str, *args, **kwargs)
+
+builtins.print = timestamped_print
+
+# Load local .env file explicitly using absolute directory path
+from dotenv import load_dotenv
+env_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env')
+load_dotenv(dotenv_path=env_file_path)
 load_dotenv()
+
+
 
 # Firebase Config
 FIREBASE_PROJECT_ID = os.getenv("FIREBASE_PROJECT_ID", "blinkit-stock-bot-2026")
